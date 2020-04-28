@@ -74,6 +74,28 @@ To generate a synthesizable verilog file, run:
 
 The generated file will be named `DMATop.v`
 
+Register map
+------------
+
+Current register layout is shown in the table below:
+
+|Address | Role                       |
+|--------|----------------------------|
+|`0x00`  |Control register            |
+|`0x04`  |Status register             | 
+|`0x08`  |Interrupt mask regiser      |
+|`0x0c`  |Interrupt status register   |
+|`0x10`  |Reader start address        |
+|`0x14`  |Reader line length          |
+|`0x18`  |Reader line count           |
+|`0x1c`  |Reader stride between lines |
+|`0x20`  |Writer start address        |
+|`0x24`  |Writer line length          |
+|`0x28`  |Writer line count           |
+|`0x2c`  |Writer stride between lines |
+
+You can also check [WorkerCSRWrapper](src/main/scala/DMAController/Worker/WorkerCSRWrapper.scala) for more details on how the CSRs are attached to the DMA logic (`io.csr(0)` refers to `0x00`, `io.csr(1)` to `0x04` and so on).
+
 Customizing FastVDMA
 --------------------
 
