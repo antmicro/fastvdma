@@ -56,7 +56,7 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
   val writerStart = RegInit(false.B)
 
   val control = Wire(UInt())
-  val clear = WireInit(Cat(readerStart, writerStart))
+  val clear = Wire(UInt())
 
   control := ClearCSR(clear, io.csr(0))
 
@@ -64,6 +64,8 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
 
   io.irq <> InterruptController(addressGeneratorRead.io.ctl.busy, addressGeneratorWrite.io.ctl.busy,
     io.csr(2), io.csr(3))
+
+  clear := Cat(readerStart, writerStart) & ~Cat(control(5), control(4))
 
   readerStart := ((!readerSyncOld && readerSync) || control(3)) && control(1)
   writerStart := ((!writerSyncOld && writerSync) || control(2)) && control(0)
