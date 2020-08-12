@@ -27,6 +27,7 @@ import DMAController.Bus.WishboneSlave
 import DMAController.CSR.{CSR, CSRBusBundle}
 import DMAController.DMATop
 import chisel3._
+import chisel3.util._
 
 class WishboneCSR(addrWidth : Int) extends Module{
   val io = IO(new Bundle {
@@ -34,16 +35,41 @@ class WishboneCSR(addrWidth : Int) extends Module{
     val bus = new CSRBusBundle
   })
 
+  val sIdle :: sAck :: Nil = Enum(2)
+
+  val state = RegInit(sIdle)
+
+  val ack  = RegInit(false.B)
+  val write = RegInit(false.B)
+  val read = RegInit(false.B)
+
+  val valid = WireInit(io.ctl.stb_i & io.ctl.cyc_i)
+
+  switch(state){
+    is(sIdle){
+      ack := false.B
+      write := false.B
+      read := false.B
+      when(io.ctl.stb_i & io.ctl.cyc_i){
+        state := sAck
+      }
+    }
+    is(sAck){
+      state := sIdle
+      ack := true.B
+      write := io.ctl.we_i
+      read := !io.ctl.we_i
+    }
+  }
+
   io.ctl.stall_o := false.B
   io.ctl.err_o := false.B
-  io.ctl.ack_o := io.ctl.stb_i
+
+  io.ctl.ack_o := ack
+  io.bus.write := write
+  io.bus.read := read
 
   io.bus.dataOut := io.ctl.dat_i
   io.ctl.dat_o := io.bus.dataIn
-
-  io.bus.write := io.ctl.stb_i && io.ctl.we_i
-  io.bus.read := io.ctl.stb_i && !io.ctl.we_i
-
   io.bus.addr := io.ctl.adr_i(5, 2)
-
 }
