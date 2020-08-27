@@ -40,25 +40,20 @@ class WishboneCSR(addrWidth : Int) extends Module{
   val state = RegInit(sIdle)
 
   val ack  = RegInit(false.B)
-  val write = RegInit(false.B)
-  val read = RegInit(false.B)
 
   val valid = WireInit(io.ctl.stb_i & io.ctl.cyc_i)
 
   switch(state){
     is(sIdle){
       ack := false.B
-      write := false.B
-      read := false.B
       when(io.ctl.stb_i & io.ctl.cyc_i){
         state := sAck
+        ack := true.B
       }
     }
     is(sAck){
+      ack := false.B
       state := sIdle
-      ack := true.B
-      write := io.ctl.we_i
-      read := !io.ctl.we_i
     }
   }
 
@@ -66,10 +61,10 @@ class WishboneCSR(addrWidth : Int) extends Module{
   io.ctl.err_o := false.B
 
   io.ctl.ack_o := ack
-  io.bus.write := write
-  io.bus.read := read
+  io.bus.write := ack & io.ctl.we_i
+  io.bus.read := ack & !io.ctl.we_i
 
   io.bus.dataOut := io.ctl.dat_i
   io.ctl.dat_o := io.bus.dataIn
-  io.bus.addr := io.ctl.adr_i(5, 2)
+  io.bus.addr := io.ctl.adr_i
 }
