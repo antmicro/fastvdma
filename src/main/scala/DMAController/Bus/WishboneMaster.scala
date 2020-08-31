@@ -24,6 +24,7 @@ SOFTWARE.
 package DMAController.Bus
 
 import chisel3._
+import chisel3.util._
 
 class WishboneMaster(val addrWidth : Int, val dataWidth : Int) extends Bundle{
   /* data */
@@ -33,7 +34,7 @@ class WishboneMaster(val addrWidth : Int, val dataWidth : Int) extends Bundle{
   val cyc_o = Output(Bool())
   val stb_o = Output(Bool())
   val we_o = Output(Bool())
-  val adr_o = Output(UInt(addrWidth.W))
+  val adr_o = Output(UInt((addrWidth - log2Ceil(dataWidth / 8)).W))
   val sel_o = Output(UInt((dataWidth / 8).W))
   val ack_i = Input(Bool())
   val stall_i = Input(Bool())
