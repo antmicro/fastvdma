@@ -41,8 +41,8 @@ class WishboneClassicReader(val addrWidth : Int, val dataWidth : Int) extends Mo
 
   val stbCnt = RegInit(0.U(addrWidth.W))
   val adr = RegInit(0.U(addrWidth.W))
-  val cyc = WireInit(stbCnt =/= 0.U)
   val stb = WireInit(stbCnt =/= 0.U && io.dataOut.ready)
+  val cyc = WireInit(stb)
   val ack = WireInit(io.bus.ack_i)
 
   val ready = WireInit(cyc && stb && ack)
