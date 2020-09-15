@@ -57,7 +57,7 @@ class WishboneClassicPipelinedReader(val addrWidth : Int, val dataWidth : Int) e
   io.bus.dat_o := 0.U
   io.bus.we_o := false.B
   io.bus.sel_o := ~0.U((dataWidth / 8).W)
-  io.bus.adr_o := adr
+  io.bus.adr_o := adr(addrWidth - 1, log2Ceil(dataWidth / 8))
   io.bus.cyc_o := cyc
   io.bus.stb_o := stb
 
