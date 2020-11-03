@@ -4,7 +4,7 @@ TB=ControllerSpec
 
 SIZE=512
 SIZE_HALF=256
-IMG=lenna.png
+IMG=bunny.png
 
 verilog:
 	$(SBT) "runMain $(DRIVER)"
