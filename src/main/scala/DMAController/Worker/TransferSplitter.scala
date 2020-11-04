@@ -46,6 +46,9 @@ class TransferSplitter(val addressWidth : Int, val dataWidth : Int,
     val address_o = RegInit(0.U(addressWidth.W))
     val length_o = RegInit(0.U(addressWidth.W))
 
+    val first_i = RegInit(false.B)
+    val first_o = RegInit(false.B)
+
     val done = RegInit(false.B)
     val valid = RegInit(false.B)
 
@@ -54,6 +57,7 @@ class TransferSplitter(val addressWidth : Int, val dataWidth : Int,
     io.xferIn.done := done
     io.xferOut.valid := valid
 
+    io.xferOut.first := first_o
     io.xferOut.address := address_o
     io.xferOut.length := length_o
 
@@ -64,11 +68,13 @@ class TransferSplitter(val addressWidth : Int, val dataWidth : Int,
         when(io.xferIn.valid) {
           address_i := io.xferIn.address
           length_i := io.xferIn.length
+          first_i := io.xferIn.first
           state := sSplit
         }
       }
       is(sSplit) {
         address_o := address_i
+        first_o := first_i
         valid := true.B
         state := sSplitWait
 
@@ -111,6 +117,7 @@ class TransferSplitter(val addressWidth : Int, val dataWidth : Int,
       }
       is(sSplitWait) {
         valid := false.B
+        first_i := false.B
         when(io.xferOut.done) {
           when(length_i > 0.U) {
             state := sSplit
