@@ -49,13 +49,8 @@ class AXI4LiteCSR(addrWidth : Int) extends Module{
 
   val addr = RegInit(0.U(addrWidth.W))
 
-  val read = RegInit(false.B)
-  val write = RegInit(false.B)
-
-  val wdata = RegInit(0.U(DMATop.controlDataWidth.W))
-
   io.ctl.r.rdata := io.bus.dataIn
-  io.bus.dataOut := wdata
+  io.bus.dataOut := io.ctl.w.wdata
 
   io.ctl.aw.awready := awready
   io.ctl.w.wready := wready
@@ -66,8 +61,8 @@ class AXI4LiteCSR(addrWidth : Int) extends Module{
   io.ctl.r.rvalid := rvalid
   io.ctl.r.rresp := rresp
 
-  io.bus.read := read
-  io.bus.write := write
+  io.bus.read := io.ctl.r.rready && rvalid
+  io.bus.write := io.ctl.w.wvalid && wready
   io.bus.addr := addr
 
   switch(state){
@@ -86,13 +81,11 @@ class AXI4LiteCSR(addrWidth : Int) extends Module{
     is(sReadAddr){
       when(io.ctl.ar.arvalid && arready){
         state := sReadData
-        read := true.B
         arready := false.B
         rvalid := true.B
       }
     }
     is(sReadData){
-      read := false.B
       when(io.ctl.r.rready && rvalid){
         state := sIdle
         rvalid := false.B
@@ -109,13 +102,10 @@ class AXI4LiteCSR(addrWidth : Int) extends Module{
       when(io.ctl.w.wvalid && wready){
         state := sWriteResp
         wready := false.B
-        write := true.B
-        wdata := io.ctl.w.wdata
         bvalid := true.B
       }
     }
     is(sWriteResp){
-      write := false.B
       when(io.ctl.b.bready && bvalid){
         state := sIdle
         bvalid := false.B
