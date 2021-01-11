@@ -30,4 +30,5 @@ class XferDescBundle(val addrWidth : Int) extends Bundle{
   val address = Output(UInt(addrWidth.W))
   val length = Output(UInt(addrWidth.W))
   val valid = Output(Bool())
+  val first = Output(Bool())
 }

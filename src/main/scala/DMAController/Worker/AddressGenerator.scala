@@ -44,11 +44,13 @@ class AddressGenerator(val addrWidth : Int, val dataWidth : Int) extends Module{
   val length_o = RegInit(0.U(addrWidth.W))
   val length_i = RegInit(0.U(addrWidth.W))
   val valid = RegInit(false.B)
+  val first = RegInit(false.B)
   val busy = RegInit(false.B)
 
   io.xfer.address := address_o
   io.xfer.length := length_o
   io.xfer.valid := valid
+  io.xfer.first := first
   io.ctl.busy := busy
 
   when(state === sIdle){
@@ -66,9 +68,11 @@ class AddressGenerator(val addrWidth : Int, val dataWidth : Int) extends Module{
         length_i := io.ctl.lineLength
         lineCount := io.ctl.lineCount
         lineGap := io.ctl.lineGap
+        first := true.B
       }
     }
     is(sLine){
+
       valid := true.B
       address_o := address_i
       length_o := length_i
@@ -79,6 +83,7 @@ class AddressGenerator(val addrWidth : Int, val dataWidth : Int) extends Module{
     }
     is(sLineWait){
       valid := false.B
+      first := false.B
       when(io.xfer.done){
         when(lineCount > 0.U){
           state := sLine

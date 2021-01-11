@@ -69,6 +69,7 @@ class AXIStreamMaster(val addrWidth: Int, val dataWidth: Int) extends Module{
       enable := false.B
 
       when(io.xfer.valid){
+        user := io.xfer.first
         state := sTransfer
         length := io.xfer.length
         enable := true.B
@@ -76,6 +77,7 @@ class AXIStreamMaster(val addrWidth: Int, val dataWidth: Int) extends Module{
     }
     is(sTransfer){
       when(ready && valid){
+        user := false.B
         length := length - 1.U
         when(length === 1.U){
           state := sDone
