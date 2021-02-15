@@ -94,6 +94,8 @@ Current register layout is shown in the table below:
 |`0x28`  |Writer line count           |
 |`0x2c`  |Writer stride between lines |
 
+For a detailed description of register fields check [Register fields](doc/csr.md).
+
 You can also check [WorkerCSRWrapper](src/main/scala/DMAController/Worker/WorkerCSRWrapper.scala) for more details on how the CSRs are attached to the DMA logic (`io.csr(0)` refers to `0x00`, `io.csr(1)` to `0x04` and so on).
 
 Customizing FastVDMA
