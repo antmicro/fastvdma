@@ -1,6 +1,11 @@
 Fast Versatile DMA
 ==================
 
+Copyright (c) 2019-2021 [Antmicro](https://www.antmicro.com)
+
+Overview
+--------
+
 FastVDMA is a DMA controller designed with portability and customizability in mind.
 
 Supported features
