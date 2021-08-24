@@ -121,3 +121,9 @@ Source code structure
   - [Bfm](src/test/scala/DMAController/Bfm) contains Bus models that are used in full configuration tests
   - [Frontend](src/test/scala/DMAController/Frontend) contains tests used for generating timing diagrams for various bus types
   - [Worker](src/test/scala/DMAController/Worker) contains tests that generate timinig diagrams for the generic part of the DMA
+
+Linux drivers
+-------------
+
+FastVDMA can be controlled using a Linux driver.
+The source code and relevant documentation can be found in a [separate repository](https://github.com/antmicro/linux-xlnx/tree/fastvdma-driver).
