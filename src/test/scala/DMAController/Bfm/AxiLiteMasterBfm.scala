@@ -70,14 +70,18 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
     private var state = State.Idle
 
     private var ar_ready: BigInt = 0
+    private var ar_valid: BigInt = 0
     private var r_data: BigInt = 0
     private var r_resp: BigInt = 0
+    private var r_ready: BigInt = 0
     private var r_valid: BigInt = 0
 
     private def peekInputs(): Unit = {
       ar_ready = peek(axi.ar.arready)
+      ar_valid = peek(axi.ar.arvalid)
       r_data = peek(axi.r.rdata)
       r_resp = peek(axi.r.rresp)
+      r_ready = peek(axi.r.rready)
       r_valid = peek(axi.r.rvalid)
     }
 
@@ -98,17 +102,16 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
         case State.ReadAddr => {
           poke(axi.ar.arvalid, 1)
           poke(axi.ar.araddr, currCmd.addr)
-          if (ar_ready != 0) {
+          if (ar_ready != 0 && ar_valid != 0) {
+            poke(axi.ar.arvalid, 0)
             state = State.ReadData
           }
         }
         case State.ReadData => {
-          poke(axi.ar.arvalid, 0)
-          poke(axi.ar.araddr, 0)
           poke(axi.r.rready, 1)
-          if (r_valid != 0) {
-            printWithBg(f"${t}%5d AxiLiteMasterBfm: read: from addr 0x${currCmd.addr}%x data 0x${r_data}%08x")
+          if (r_ready != 0 && r_valid != 0) {
             poke(axi.r.rready, 0)
+            printWithBg(f"${t}%5d AxiLiteMasterBfm: read: from addr 0x${currCmd.addr}%x data 0x${r_data}%08x")
             respList += new Resp(r_resp == 0, r_data)
             state = State.Idle
           }
@@ -131,14 +134,20 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
     private var state = State.Idle
 
     private var aw_ready: BigInt = 0
+    private var aw_valid: BigInt = 0
     private var w_ready: BigInt = 0
+    private var w_valid: BigInt = 0
     private var b_resp: BigInt = 0
     private var b_valid: BigInt = 0
+    private var b_ready: BigInt = 0
 
     private def peekInputs(): Unit = {
       aw_ready = peek(axi.aw.awready)
+      aw_valid = peek(axi.aw.awvalid)
       w_ready = peek(axi.w.wready)
+      w_valid = peek(axi.w.wvalid)
       b_resp = peek(axi.b.bresp)
+      b_ready = peek(axi.b.bready)
       b_valid = peek(axi.b.bvalid)
     }
 
@@ -159,26 +168,24 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
         case State.WriteAddr => {
           poke(axi.aw.awvalid, 1)
           poke(axi.aw.awaddr, currCmd.addr)
-          if (aw_ready != 0) {
+          if (aw_ready != 0 && aw_valid != 0) {
+            poke(axi.aw.awvalid, 0)
             state = State.WriteData
           }
         }
         case State.WriteData => {
-          poke(axi.aw.awvalid, 0)
-          poke(axi.aw.awaddr, 0)
           poke(axi.w.wvalid, 1)
           poke(axi.w.wdata, currCmd.wr_data)
-          if (w_ready != 0) {
+          if (w_ready != 0 && w_valid != 0) {
+            poke(axi.w.wvalid, 0)
             state = State.WriteWaitResp
           }
         }
         case State.WriteWaitResp => {
-          poke(axi.w.wvalid, 0)
-          poke(axi.w.wdata, 0)
           poke(axi.b.bready, 1)
-          if (b_valid != 0) {
+          if (b_ready != 0 && b_valid != 0) {
             val resp_str = if (b_resp == 0) { "OK" } else { "ERR" }
-            printWithBg(f"${t}%5d AxiLiteMasterBfm: write: from addr 0x${currCmd.addr}%x resp ${resp_str}")
+            printWithBg(f"${t}%5d AxiLiteMasterBfm: write: to addr 0x${currCmd.addr}%x resp ${resp_str}")
             poke(axi.b.bready, 0)
             respList += new Resp(b_resp == 0, 0)
             state = State.Idle
