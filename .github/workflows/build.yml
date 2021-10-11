@@ -1,0 +1,12 @@
+name: build-and-test-design
+
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test
+        run: |
+         source .github/scripts/setup-environment.sh
+         source .github/scripts/test.sh
