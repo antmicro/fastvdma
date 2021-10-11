@@ -1,0 +1,13 @@
+image: $DOCKER_IMAGE
+
+before_script:
+  - apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends git build-essential
+  - ./.github/scripts/setup-environment.sh
+  - git submodule update --init --recursive
+
+test:
+  script:
+    - ./.github/scripts/test.sh
+  artifacts:
+    paths:
+      - out/
