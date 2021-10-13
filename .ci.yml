@@ -1,7 +1,8 @@
 image: $DOCKER_IMAGE
 
 before_script:
-  - apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends git build-essential
+# sudo is necessary for setup-enviroment.sh script
+  - apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends git build-essential sudo
   - ./.github/scripts/setup-environment.sh
   - git submodule update --init --recursive
 

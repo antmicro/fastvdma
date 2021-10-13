@@ -8,5 +8,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Test
         run: |
-         source .github/scripts/setup-environment.sh
-         source .github/scripts/test.sh
+         ./.github/scripts/setup-environment.sh
+         ./.github/scripts/test.sh
