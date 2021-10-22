@@ -108,9 +108,28 @@ You can also check [WorkerCSRWrapper](src/main/scala/DMAController/Worker/Worker
 Customizing FastVDMA
 --------------------
 
-Configuration for the DMA is located in the [DMATop](src/main/scala/DMAController/DMATop.scala) file.
-Most of the settings are defined in the `DMATop` companion object but to change which busses are used, the `DMATop` class must be modified to contain correct `io` bundles and `*Frontend` modules.
-After making changes to interfaces used in `DMATop` class make sure to verify that companion object is correctly configured.
+Configuration for the DMA is located in the [DMAConfig](src/main/scala/DMAController/DMAConfig.scala) file.
+Most of the settings are defined in the `DMATop` companion object. To change which buses are used you need to set the `DMACONFIG` environment variable. All possible configurations are listed in the map in `DMAConfig` file. The `DMACONFIG` variable consists of names for reader, control and writer buses.
+For example, to generate a design consisting of AXI Stream reader, AXI4 writer and AXILite control you would need to set `DMACONFIG` to `AXIS_AXIL_AXI`.
+However, if you would like to run already written tests on your specified configuration you will also need to cast buses in `io` field in `DMAFull` accordingly to chosen cofiguration. Example:
+
+```
+val io = dut.io.asInstanceOf[Bundle{
+                                val control: AXI4Lite
+                                val read: AXIStream
+                                val write: AXI4
+                                val irq: InterruptBundle
+                                val sync: SyncBundle}]
+```
+
+You will also need to remeber to choose correct BFMs:
+
+```
+  val axil_master = new AxiLiteMasterBfm(io.control, peek, poke, println)
+  val axis_master = new AxiStreamMasterBfm(io.read, width, peek, poke, println)
+  val axi4_slave = new Axi4SlaveBfm(io.write, width * height, peek, poke, println)
+```
+
 
 Source code structure
 ---------------------
