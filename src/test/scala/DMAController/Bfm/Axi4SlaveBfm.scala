@@ -19,11 +19,11 @@ import chisel3.Bits
 
 import java.nio._
 
-class Axi4SlaveBfm(val axi: AXI4,
+class Axi4MemoryBfm(val axi: AXI4,
                         val size: Int,
                         val peek: Bits => BigInt,
                         val poke: (Bits, BigInt) => Unit,
-                        val println: String => Unit) 
+                        val println: String => Unit)
 extends Axi4Bfm {
 
   var buf: Array[Int] = new Array[Int](size)
@@ -106,8 +106,63 @@ extends Axi4Bfm {
   }
 
   class Read {
-    def update(t: Long): Unit = {
+    private object State extends Enumeration {
+      type State = Value
+      val Idle, ReadAddr, ReadData = Value
+    }
 
+    private var state = State.Idle
+
+    private var araddr: BigInt = 0
+    private var arlen: BigInt = 0
+    private var arvalid: BigInt = 0
+
+    private var rready: BigInt = 0
+
+    private var addr: Int = 0
+    private var len: Int = 0
+    private var xferLen: Int = 0
+
+    private def peekInputs(): Unit = {
+      araddr = peek(axi.ar.araddr)
+      arlen = peek(axi.ar.arlen)
+      arvalid = peek(axi.ar.arvalid)
+
+      rready = peek(axi.r.rready)
+    }
+
+    def update(t: Long): Unit = {
+      state match {
+        case State.Idle => {
+          poke(axi.ar.arready, 1)
+          poke(axi.r.rlast, 0)
+          poke(axi.r.rvalid, 0)
+          state = State.ReadAddr
+          len = 0
+        }
+        case State.ReadAddr => {
+          if(arvalid != 0) {
+            addr = araddr.toInt / 4
+            xferLen = arlen.toInt + 1
+            poke(axi.ar.arready, 0)
+            state = State.ReadData
+          }
+        }
+        case State.ReadData => {
+          if(rready != 0) {
+            poke(axi.r.rdata, buf(addr))
+            addr += 1
+            len += 1
+            poke(axi.r.rvalid, 1)
+
+            if(xferLen == len) {
+              poke(axi.r.rlast, 1)
+              state = State.Idle
+            }
+          }
+        }
+      }
+      peekInputs
     }
   }
 

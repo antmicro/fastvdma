@@ -16,6 +16,6 @@ package DMAController.Bfm
 
 import DMAController.Bus._
 
-trait AxiStreamBfm extends ChiselBfm {
+trait AxiStreamBfm extends IOBfm {
   val axi: AXIStream
 }

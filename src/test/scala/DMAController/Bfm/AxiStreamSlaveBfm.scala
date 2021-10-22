@@ -22,7 +22,7 @@ import scala.collection.mutable.ListBuffer
 class AxiStreamSlaveBfm(val axi: AXIStream,
                         val peek: Bits => BigInt,
                         val poke: (Bits, BigInt) => Unit,
-                        val println: String => Unit) 
+                        val println: String => Unit)
 extends AxiStreamBfm {
 
   private var rxList: ListBuffer[BigInt] = new ListBuffer()
@@ -45,7 +45,7 @@ extends AxiStreamBfm {
     tuser = peek(axi.tuser)
     tlast = peek(axi.tlast)
   }
-  
+
   def update(t: Long): Unit = {
     state match {
       case State.Idle => {
@@ -59,5 +59,11 @@ extends AxiStreamBfm {
       }
     }
     peekInputs
+  }
+
+  def loadFromFile(filename: String): Unit = {
+  }
+
+  def saveToFile(filename: String): Unit = {
   }
 }

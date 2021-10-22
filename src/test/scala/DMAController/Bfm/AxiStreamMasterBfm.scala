@@ -54,6 +54,9 @@ extends AxiStreamBfm {
     println("AXI Stream BFM, file %s, %d words".format(filename, buf.length))
   }
 
+  def saveToFile(filename: String): Unit = {
+  }
+
   private def peekInputs(): Unit = {
     tready = peek(axi.tready)
   }
@@ -69,7 +72,7 @@ extends AxiStreamBfm {
       poke(axi.tlast, 0)
     }
   }
-  
+
   def update(t: Long): Unit = {
     state match {
       case State.Idle => {
