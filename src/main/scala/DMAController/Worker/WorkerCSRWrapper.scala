@@ -52,6 +52,8 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
   val envTag = System.getenv("TAG")
   val tag = if (envTag.isEmpty()) "v0.0" else envTag
   val version = RegInit(tag.filter(_.isDigit).toInt.U)
+  val (in, csr, out) = DMAIOConfig.getConfig()
+  val config = RegInit((in << 8 | csr << 4 | out).U(addrWidth.W))
 
   control := ClearCSR(clear, io.csr(0))
 
@@ -78,8 +80,9 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
   addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(io.csr(11))
 
   StatusCSR(version, io.csr(12))
+  StatusCSR(version, io.csr(13))
 
-  for(i <- 13 until DMATop.controlRegCount){
+  for(i <- 14 until DMATop.controlRegCount){
     SimpleCSR(io.csr(i))
   }
 

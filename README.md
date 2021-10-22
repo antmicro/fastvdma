@@ -99,6 +99,7 @@ Current register layout is shown in the table below:
 |`0x28`  |Writer line count           |
 |`0x2c`  |Writer stride between lines |
 |`0x30`  |Version register            |
+|`0x34`  |Configuration register      |
 
 For a detailed description of register fields check [Register fields](doc/csr.md).
 
