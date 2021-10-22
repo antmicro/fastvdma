@@ -6,6 +6,9 @@ SIZE=512
 SIZE_HALF=256
 IMG=bunny.png
 
+TAG:=$(shell git describe --tags --abbrev=0)
+export TAG
+
 verilog:
 	$(SBT) "runMain $(DRIVER)"
 
