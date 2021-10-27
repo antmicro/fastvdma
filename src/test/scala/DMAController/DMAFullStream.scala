@@ -21,8 +21,17 @@ import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chisel3.iotesters._
 import chisel3._
 
-abstract class DMAFull(dut: DMATop) extends PeekPokeTester(dut){
-  val control: ControlBfm
-  val reader: IOBfm
-  val writer: IOBfm
+class DMAFullStream(dut: DMATop) extends DMAFull(dut) {
+  val width = 256
+  val height = 256
+  val io = dut.io.asInstanceOf[Bundle{
+                                val control: AXI4Lite
+                                val read: AXIStream
+                                val write: AXI4
+                                val irq: InterruptBundle
+                                val sync: SyncBundle}]
+
+  val control = new AxiLiteMasterBfm(io.control, peek, poke, println)
+  val reader = new AxiStreamMasterBfm(io.read, width * height, peek, poke, println)
+  val writer = new Axi4MemoryBfm(io.write, width * height, peek, poke, println)
 }

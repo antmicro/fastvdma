@@ -18,14 +18,22 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class ControllerSpec extends FlatSpec with Matchers{
   behavior of "ControllerSpec"
-
   val dma_config = System.getenv("DMACONFIG")
-  if (dma_config == "AXIS_AXIL_AXI") {
-    it should "perform 2D S2MM transfer with stride" in {
-      chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-        new DMATop) { dut =>
-        new DMAFull(dut)
-      } should be(true)
-    }
+  dma_config match {
+    case "AXI_AXIL_AXI" =>
+      it should "perform 2D S2MM transfer with stride stream to mem" in {
+       chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
+          new DMATop) { dut =>
+          new ImageTransfer(dut, new DMAFullMem(dut))
+        } should be(true)
+      }
+
+    case "AXIS_AXIL_AXI" =>
+      it should "perform 2D S2MM transfer with stride stream to mem" in {
+       chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
+          new DMATop) { dut =>
+          new ImageTransfer(dut, new DMAFullStream(dut))
+        } should be(true)
+      }
   }
 }
