@@ -16,6 +16,8 @@ package DMAController
 
 import scala.reflect.runtime.universe._
 import DMAController.Bfm._
+import DMAController.Bus._
+import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chisel3.iotesters._
 import chisel3._
 
@@ -24,7 +26,6 @@ class DMAFull(dut: DMATop) extends PeekPokeTester(dut){
   val height = 256
   val min = 0
   val max = width * height * 2
-  
   var cnt: Int = 0
 
   def waitRange(data: Bits, exp: Int, min: Int, max: Int) : Unit = {
@@ -38,6 +39,13 @@ class DMAFull(dut: DMATop) extends PeekPokeTester(dut){
     assert(cnt < max)
     assert(cnt >= min)
   }
+
+  val io = dut.io.asInstanceOf[Bundle{
+                                val control: AXI4Lite
+                                val read: AXIStream
+                                val write: AXI4
+                                val irq: InterruptBundle
+                                val sync: SyncBundle}]
 
   val cls = runtimeMirror(getClass.getClassLoader).reflect(this)
   val members = cls.symbol.typeSignature.members
@@ -57,9 +65,9 @@ class DMAFull(dut: DMATop) extends PeekPokeTester(dut){
     }
   }
 
-  val axil_master = new AxiLiteMasterBfm(dut.io.control, peek, poke, println)
-  val axis_master = new AxiStreamMasterBfm(dut.io.read, width, peek, poke, println)
-  val axi4_slave = new Axi4SlaveBfm(dut.io.write, width * height, peek, poke, println)
+  val axil_master = new AxiLiteMasterBfm(io.control, peek, poke, println)
+  val axis_master = new AxiStreamMasterBfm(io.read, width, peek, poke, println)
+  val axi4_slave = new Axi4SlaveBfm(io.write, width * height, peek, poke, println)
 
   axis_master.loadFromFile("./img0.rgba")
   axi4_slave.loadFromFile("./img1.rgba")

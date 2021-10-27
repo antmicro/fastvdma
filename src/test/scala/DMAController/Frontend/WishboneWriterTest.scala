@@ -18,8 +18,8 @@ import chisel3.iotesters._
 
 class WishboneWriterTest(dut: WishboneClassicPipelinedWriter) extends PeekPokeTester(dut) {
   poke(dut.io.bus.ack_i, 1)
-  poke(dut.io.dataIn.valid, 1)
-  poke(dut.io.dataIn.bits, 0x12345678)
+  poke(dut.io.dataIO.valid, 1)
+  poke(dut.io.dataIO.bits, 0x12345678)
   poke(dut.io.xfer.length, 5)
   poke(dut.io.xfer.valid, 0)
 

@@ -24,7 +24,7 @@ class AXI4ReaderTest(dut: AXI4Reader) extends PeekPokeTester(dut){
   poke(dut.io.xfer.address, 0x40000000)
   poke(dut.io.xfer.length, transferLen)
 
-  poke(dut.io.dataOut.ready, 0)
+  poke(dut.io.dataIO.ready, 0)
 
   poke(dut.io.bus.ar.arready, 0)
 
@@ -51,7 +51,7 @@ class AXI4ReaderTest(dut: AXI4Reader) extends PeekPokeTester(dut){
 
   step(1)
 
-  poke(dut.io.dataOut.ready, 1)
+  poke(dut.io.dataIO.ready, 1)
   poke(dut.io.bus.r.rvalid, 1)
 
   while(transferLen > (currentLen + 1)){

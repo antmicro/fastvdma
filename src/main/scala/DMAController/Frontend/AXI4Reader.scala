@@ -15,15 +15,16 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Frontend
 
 import DMAController.Bus._
-import DMAController.Worker.XferDescBundle
+import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
+import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
 
-class AXI4Reader(val addrWidth : Int, val dataWidth : Int) extends Module{
+class AXI4Reader(val addrWidth : Int, val dataWidth : Int) extends IOBus[AXI4]{
   val io = IO(new Bundle{
     val bus = new AXI4(addrWidth, dataWidth)
 
-    val dataOut = EnqIO(UInt(dataWidth.W))
+    val dataIO = EnqIO(UInt(dataWidth.W))
 
     val xfer = Flipped(new XferDescBundle(addrWidth))
   })
@@ -40,7 +41,7 @@ class AXI4Reader(val addrWidth : Int, val dataWidth : Int) extends Module{
   val arvalid = RegInit(false.B)
   val arsize = WireInit(log2Ceil(dataWidth/8).U)
 
-  val ready = WireInit(io.dataOut.ready && enable)
+  val ready = WireInit(io.dataIO.ready && enable)
   val valid = WireInit(io.bus.r.rvalid && enable)
 
   io.bus.aw <> AXI4AW.tieOff(addrWidth)
@@ -49,8 +50,8 @@ class AXI4Reader(val addrWidth : Int, val dataWidth : Int) extends Module{
   io.bus.ar <> AXI4AR(araddr, arlen, arsize, arvalid)
   io.bus.r <> AXI4R(dataWidth, ready)
 
-  io.dataOut.valid := valid
-  io.dataOut.bits := io.bus.r.rdata
+  io.dataIO.valid := valid
+  io.dataIO.bits := io.bus.r.rdata
   io.xfer.done := done
 
   switch(state){

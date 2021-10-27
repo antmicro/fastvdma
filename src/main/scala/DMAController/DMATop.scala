@@ -15,34 +15,39 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController
 
 import chisel3._
+import chisel3.util._
 import DMAController.Bus._
 import DMAController.CSR.CSR
 import DMAController.Frontend._
 import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
+import DMAController.DMAConfig._
 import chisel3.util.Queue
 
 class DMATop extends Module{
+  val (reader, ccsr, writer) = DMAIOConfig.getConfig()
+  val Bus = new Bus()
+
   val io = IO(new Bundle{
-    val control = Flipped(new AXI4Lite(DMATop.controlAddrWidth, DMATop.controlDataWidth))
-    val read = Flipped(new AXIStream(DMATop.readDataWidth))
-    val write = new AXI4(DMATop.addrWidth, DMATop.writeDataWidth)
+    val control = Bus.getControlBus(ccsr)
+    val read = Bus.getReaderBus(reader)
+    val write = Bus.getWriterBus(writer)
     val irq = new InterruptBundle
     val sync = new SyncBundle
   })
 
-  val csrFrontend = Module(new AXI4LiteCSR(DMATop.addrWidth))
+  val csrFrontend = Module(Bus.getCSR(ccsr))
 
-  val readerFrontend = Module(new AXIStreamSlave(DMATop.addrWidth, DMATop.readDataWidth))
+  val readerFrontend = Module(Bus.getReader(reader))
 
-  val writerFrontend = Module(new AXI4Writer(DMATop.addrWidth, DMATop.writeDataWidth))
+  val writerFrontend = Module(Bus.getWriter(writer))
 
   val csr = Module(new CSR(DMATop.addrWidth))
 
   val ctl = Module(new WorkerCSRWrapper(DMATop.addrWidth, DMATop.readDataWidth, DMATop.writeDataWidth,
     DMATop.readMaxBurst, DMATop.writeMaxBurst, DMATop.reader4KBarrier, DMATop.writer4KBarrier))
 
-  val queue = Queue(readerFrontend.io.dataOut, DMATop.fifoDepth)
-  queue <> writerFrontend.io.dataIn
+  val queue = Queue(readerFrontend.io.dataIO, DMATop.fifoDepth)
+  queue <> writerFrontend.io.dataIO
 
   csrFrontend.io.ctl <> io.control
   csr.io.bus <> csrFrontend.io.bus
@@ -57,21 +62,4 @@ class DMATop extends Module{
   io.sync <> ctl.io.sync
 
   assert(DMATop.readDataWidth == DMATop.writeDataWidth)
-
-}
-
-object DMATop {
-  val addrWidth = 32
-  val readDataWidth = 32
-  val writeDataWidth = 32
-  val readMaxBurst = 0
-  val writeMaxBurst = 256
-  val reader4KBarrier = false
-  val writer4KBarrier = true
-
-  val controlDataWidth = 32
-  val controlAddrWidth = 32
-  val controlRegCount = 16
-
-  val fifoDepth = 512
 }

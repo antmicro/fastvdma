@@ -15,14 +15,15 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Frontend
 
 import DMAController.Bus.WishboneMaster
-import DMAController.Worker.XferDescBundle
+import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
+import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
 
-class WishboneClassicWriter(val addrWidth : Int, val dataWidth : Int) extends Module{
+class WishboneClassicWriter(val addrWidth : Int, val dataWidth : Int) extends IOBus[WishboneMaster]{
   val io = IO(new Bundle{
     val bus = new WishboneMaster(addrWidth, dataWidth)
-    val dataIn = DeqIO(UInt(dataWidth.W))
+    val dataIO = DeqIO(UInt(dataWidth.W))
     val xfer = Flipped(new XferDescBundle(addrWidth))
   })
 
@@ -30,7 +31,7 @@ class WishboneClassicWriter(val addrWidth : Int, val dataWidth : Int) extends Mo
 
   val state = RegInit(sIdle)
 
-  val valid = WireInit(io.dataIn.valid)
+  val valid = WireInit(io.dataIO.valid)
 
   val stbCnt = RegInit(0.U(addrWidth.W))
   val adr = RegInit(0.U(addrWidth.W))
@@ -42,8 +43,8 @@ class WishboneClassicWriter(val addrWidth : Int, val dataWidth : Int) extends Mo
 
   val done = RegInit(false.B)
 
-  io.bus.dat_o := io.dataIn.bits
-  io.dataIn.ready := ready
+  io.bus.dat_o := io.dataIO.bits
+  io.dataIO.ready := ready
 
 
   io.bus.we_o := true.B

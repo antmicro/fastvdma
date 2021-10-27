@@ -19,7 +19,7 @@ import chisel3.iotesters._
 class AXIStreamSlaveTest(dut : AXIStreamSlave) extends PeekPokeTester(dut){
   poke(dut.io.bus.tvalid, 1)
   poke(dut.io.bus.tdata, 0xdeadbeef)
-  poke(dut.io.dataOut.ready, 1)
+  poke(dut.io.dataIO.ready, 1)
   poke(dut.io.xfer.length, 300)
   poke(dut.io.xfer.valid, 0)
 

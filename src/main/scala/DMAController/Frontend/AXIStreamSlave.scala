@@ -15,15 +15,16 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Frontend
 
 import DMAController.Bus.AXIStream
-import DMAController.Worker.XferDescBundle
+import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
+import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
 
-class AXIStreamSlave(val addrWidth: Int, val dataWidth: Int) extends Module{
+class AXIStreamSlave(val addrWidth: Int, val dataWidth: Int) extends IOBus[AXIStream]{
   val io = IO(new Bundle{
     val bus = Flipped(new AXIStream(dataWidth))
 
-    val dataOut = EnqIO(UInt(dataWidth.W))
+    val dataIO = EnqIO(UInt(dataWidth.W))
 
     val xfer = Flipped(new XferDescBundle(addrWidth))
   })
@@ -38,13 +39,13 @@ class AXIStreamSlave(val addrWidth: Int, val dataWidth: Int) extends Module{
 
   val length = RegInit(0.U(addrWidth.W))
 
-  val ready = WireInit(io.dataOut.ready && enable)
+  val ready = WireInit(io.dataIO.ready && enable)
   val valid = WireInit(io.bus.tvalid && enable)
 
-  io.dataOut.valid := valid
+  io.dataIO.valid := valid
   io.bus.tready := ready
 
-  io.dataOut.bits := io.bus.tdata
+  io.dataIO.bits := io.bus.tdata
 
   io.xfer.done := done
 

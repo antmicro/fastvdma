@@ -21,4 +21,7 @@ test:
 testall: test
 	$(SBT) "test"
 
+clean:
+	$(SBT) clean
+
 .PHONY: verilog test testall

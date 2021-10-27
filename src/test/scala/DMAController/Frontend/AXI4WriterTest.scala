@@ -24,8 +24,8 @@ class AXI4WriterTest(dut: AXI4Writer) extends PeekPokeTester(dut){
   poke(dut.io.bus.w.wready, 0)
   poke(dut.io.bus.b.bvalid, 0)
 
-  poke(dut.io.dataIn.valid, 0)
-  poke(dut.io.dataIn.bits, 0x55aa1234)
+  poke(dut.io.dataIO.valid, 0)
+  poke(dut.io.dataIO.bits, 0x55aa1234)
 
   poke(dut.io.xfer.address, 0x80000000)
   poke(dut.io.xfer.length, transferLength)
@@ -53,7 +53,7 @@ class AXI4WriterTest(dut: AXI4Writer) extends PeekPokeTester(dut){
 
   step(1)
 
-  poke(dut.io.dataIn.valid, 1)
+  poke(dut.io.dataIO.valid, 1)
   poke(dut.io.bus.w.wready, 1)
 
   while(peek(dut.io.bus.w.wlast) != 1){
@@ -65,7 +65,7 @@ class AXI4WriterTest(dut: AXI4Writer) extends PeekPokeTester(dut){
 
   step(1)
   beatCount = beatCount + 1
-  poke(dut.io.dataIn.valid, 0)
+  poke(dut.io.dataIO.valid, 0)
   poke(dut.io.bus.w.wready, 0)
 
   step(1)

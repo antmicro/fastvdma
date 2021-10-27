@@ -15,7 +15,7 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Worker
 
 import DMAController.CSR._
-import DMAController.DMATop
+import DMAController.DMAConfig._
 import chisel3._
 import chisel3.util.Cat
 

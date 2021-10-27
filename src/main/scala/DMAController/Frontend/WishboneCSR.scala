@@ -16,11 +16,12 @@ package DMAController.Frontend
 
 import DMAController.Bus.WishboneSlave
 import DMAController.CSR.{CSR, CSRBusBundle}
-import DMAController.DMATop
+import DMAController.Worker.WorkerCSRWrapper
+import DMAController.DMAConfig._
 import chisel3._
 import chisel3.util._
 
-class WishboneCSR(addrWidth : Int) extends Module{
+class WishboneCSR(addrWidth : Int) extends CSRBus[WishboneSlave]{
   val io = IO(new Bundle {
     val ctl = new WishboneSlave(addrWidth, DMATop.controlDataWidth)
     val bus = new CSRBusBundle

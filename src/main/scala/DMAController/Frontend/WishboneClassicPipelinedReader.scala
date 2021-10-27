@@ -15,14 +15,15 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Frontend
 
 import DMAController.Bus.WishboneMaster
-import DMAController.Worker.XferDescBundle
+import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
+import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
 
-class WishboneClassicPipelinedReader(val addrWidth : Int, val dataWidth : Int) extends Module{
+class WishboneClassicPipelinedReader(val addrWidth : Int, val dataWidth : Int) extends IOBus[WishboneMaster]{
   val io = IO(new Bundle{
     val bus = new WishboneMaster(addrWidth, dataWidth)
-    val dataOut = EnqIO(UInt(dataWidth.W))
+    val dataIO = EnqIO(UInt(dataWidth.W))
     val xfer = Flipped(new XferDescBundle(addrWidth))
   })
 
@@ -36,14 +37,14 @@ class WishboneClassicPipelinedReader(val addrWidth : Int, val dataWidth : Int) e
   val ackCnt = RegInit(0.U(addrWidth.W))
   val adr = RegInit(0.U(addrWidth.W))
   val cyc = WireInit(ackCnt =/= 0.U)
-  val stb = WireInit(stbCnt =/= 0.U && io.dataOut.ready)
+  val stb = WireInit(stbCnt =/= 0.U && io.dataIO.ready)
 
   val ready = WireInit(cyc && stb && !io.bus.stall_i)
 
   val done = RegInit(false.B)
 
-  io.dataOut.bits := io.bus.dat_i
-  io.dataOut.valid := valid
+  io.dataIO.bits := io.bus.dat_i
+  io.dataIO.valid := valid
 
   io.bus.dat_o := 0.U
   io.bus.we_o := false.B

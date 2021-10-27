@@ -14,7 +14,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.CSR
 
-import DMAController.DMATop
+import DMAController.DMAConfig._
 import chisel3._
 
 class CSR(val addrWidth : Int) extends Module{

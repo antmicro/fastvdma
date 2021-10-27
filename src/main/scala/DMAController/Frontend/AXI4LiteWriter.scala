@@ -15,15 +15,16 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Frontend
 
 import DMAController.Bus._
-import DMAController.Worker.XferDescBundle
+import DMAController.Worker.{WorkerCSRWrapper, XferDescBundle}
+import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
 
-class AXI4LiteWriter(val addrWidth : Int, val dataWidth : Int) extends Module{
+class AXI4LiteWriter(val addrWidth : Int, val dataWidth : Int) extends IOBus[AXI4Lite]{
   val io = IO(new Bundle{
     val bus = new AXI4Lite(addrWidth, dataWidth)
 
-    val dataIn = DeqIO(UInt(dataWidth.W))
+    val dataIO = DeqIO(UInt(dataWidth.W))
 
     val xfer = Flipped(new XferDescBundle(addrWidth))
   })
@@ -44,15 +45,15 @@ class AXI4LiteWriter(val addrWidth : Int, val dataWidth : Int) extends Module{
   val bready = RegInit(false.B)
 
   val ready = WireInit(io.bus.w.wready && enable)
-  val valid = WireInit(io.dataIn.valid && enable)
+  val valid = WireInit(io.dataIO.valid && enable)
 
   io.bus.aw <> AXI4LAW(awaddr, awvalid)
-  io.bus.w <> AXI4LW(io.dataIn.bits, wstrb.asUInt, valid)
+  io.bus.w <> AXI4LW(io.dataIO.bits, wstrb.asUInt, valid)
   io.bus.b <> AXI4LB(bready)
   io.bus.ar <> AXI4LAR.tieOff(addrWidth)
   io.bus.r <> AXI4LR.tieOff(dataWidth)
 
-  io.dataIn.ready := ready
+  io.dataIO.ready := ready
 
   io.xfer.done := done
 
