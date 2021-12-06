@@ -77,7 +77,7 @@ To generate a synthesizable verilog file, run:
 
 `make verilog`
 
-The generated file will be named `DMATop.v`
+The generated file will be named `DMATop$(DMACONFIG).v` where `DMACONFIG` is chosen DMA configuration. Verilog module will be named in the same manner.
 
 Register map
 ------------

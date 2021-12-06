@@ -24,6 +24,8 @@ import DMAController.DMAConfig._
 import chisel3.util.Queue
 
 class DMATop extends Module{
+  val cfg = System.getenv("DMACONFIG")
+  override val desiredName =s"DMATop$cfg"
   val (reader, ccsr, writer) = DMAIOConfig.getConfig()
   val Bus = new Bus()
 
