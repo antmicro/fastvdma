@@ -21,7 +21,7 @@ class ControllerSpec extends FlatSpec with Matchers{
   val dma_config = System.getenv("DMACONFIG")
   dma_config match {
     case "AXI_AXIL_AXI" =>
-      it should "perform 2D S2MM transfer with stride stream to mem" in {
+      it should "perform 2D MM2MM transfer with stride mem to mem" in {
        chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
           new DMATop) { dut =>
           new ImageTransfer(dut, new DMAFullMem(dut))
