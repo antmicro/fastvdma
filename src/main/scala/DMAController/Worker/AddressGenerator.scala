@@ -16,8 +16,9 @@ package DMAController.Worker
 
 import chisel3._
 import chisel3.util._
+import DMAUtils.DMAModule
 
-class AddressGenerator(val addrWidth : Int, val dataWidth : Int) extends Module{
+class AddressGenerator(val addrWidth : Int, val dataWidth : Int) extends DMAModule{
   val io = IO(new Bundle{
     val ctl = new AddressGeneratorCtlBundle(addrWidth)
     val xfer = new XferDescBundle(addrWidth)

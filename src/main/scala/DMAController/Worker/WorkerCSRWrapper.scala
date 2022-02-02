@@ -16,11 +16,12 @@ package DMAController.Worker
 
 import DMAController.CSR._
 import DMAController.DMAConfig._
+import DMAUtils._
 import chisel3._
 import chisel3.util.Cat
 
 class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth : Int, readerMaxBurst : Int,
-                       writerMaxBurst : Int, reader4KBarrier : Boolean, writer4KBarrier : Boolean) extends Module{
+                       writerMaxBurst : Int, reader4KBarrier : Boolean, writer4KBarrier : Boolean) extends DMAModule{
   val io = IO(new Bundle{
     val csr: Vec[CSRRegBundle] = Vec(DMATop.controlRegCount, Flipped(new CSRRegBundle()))
     val irq = new InterruptBundle

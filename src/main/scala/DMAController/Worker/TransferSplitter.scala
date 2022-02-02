@@ -16,9 +16,10 @@ package DMAController.Worker
 
 import chisel3._
 import chisel3.util._
+import DMAUtils.DMAModule
 
 class TransferSplitter(val addressWidth : Int, val dataWidth : Int,
-                       val maxLength : Int, val canCrossBarrier : Boolean) extends Module{
+                       val maxLength : Int, val canCrossBarrier : Boolean) extends DMAModule{
   val io = IO(new Bundle{
     val xferIn = Flipped(new XferDescBundle(addressWidth))
     val xferOut = new XferDescBundle(addressWidth)

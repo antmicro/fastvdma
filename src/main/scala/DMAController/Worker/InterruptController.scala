@@ -17,8 +17,9 @@ package DMAController.Worker
 import DMAController.CSR.{CSRRegBundle, SetCSR, SimpleCSR}
 import chisel3._
 import chisel3.util.Cat
+import DMAUtils.DMAModule
 
-class InterruptController extends Module{
+class InterruptController extends DMAModule{
   val io = IO(new Bundle {
     val irq = new InterruptBundle
     val readBusy = Input(Bool())

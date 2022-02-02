@@ -18,10 +18,11 @@ import DMAController.CSR.{CSR, CSRBusBundle}
 import DMAController.Worker.{WorkerCSRWrapper, XferDescBundle}
 import DMAController.DMAConfig.DMATop
 import DMAController.DMAConfig.DMAIOConfig._
+import DMAUtils.DMAModule
 import chisel3._
 import chisel3.util._
 
-abstract class IOBus[+T] extends Module {
+abstract class IOBus[+T] extends DMAModule {
   val io : Bundle {
     val bus : T
     val dataIO : DecoupledIO[UInt]
@@ -29,7 +30,7 @@ abstract class IOBus[+T] extends Module {
   }
 }
 
-abstract class CSRBus [+T] extends Module {
+abstract class CSRBus [+T] extends DMAModule {
   val io : Bundle {
     val bus : CSRBusBundle
     val ctl : T

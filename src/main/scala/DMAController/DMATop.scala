@@ -21,11 +21,9 @@ import DMAController.CSR.CSR
 import DMAController.Frontend._
 import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
 import DMAController.DMAConfig._
-import chisel3.util.Queue
+import DMAUtils._
 
-class DMATop extends Module{
-  val cfg = System.getenv("DMACONFIG")
-  override val desiredName =s"DMATop$cfg"
+class DMATop extends DMAModule{
   val (reader, ccsr, writer) = DMAIOConfig.getConfig()
   val Bus = new Bus()
 

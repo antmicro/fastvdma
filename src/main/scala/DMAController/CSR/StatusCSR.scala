@@ -15,9 +15,10 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.CSR
 
 import DMAController.DMAConfig._
+import DMAUtils.DMAModule
 import chisel3._
 
-class StatusCSR extends Module{
+class StatusCSR extends DMAModule{
   val io = IO(new Bundle{
     val csr = Flipped(new CSRRegBundle())
     val value = Input(UInt(DMATop.controlDataWidth.W))

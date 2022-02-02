@@ -15,9 +15,10 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.CSR
 
 import DMAController.DMAConfig._
+import DMAUtils.DMAModule
 import chisel3._
 
-class CSR(val addrWidth : Int) extends Module{
+class CSR(val addrWidth : Int) extends DMAModule{
   val io = IO(new Bundle{
     val csr: Vec[CSRRegBundle] = Vec(DMATop.controlRegCount, new CSRRegBundle())
     val bus = Flipped(new CSRBusBundle)
