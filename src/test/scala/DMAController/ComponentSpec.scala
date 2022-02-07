@@ -63,6 +63,12 @@ class ComponentSpec extends FlatSpec with Matchers{
       new WishboneWriterTest(dut)
     } should be(true)
   }
+  it should "perform Wishbone read transfers" in {
+    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
+      new WishboneClassicPipelinedReader(32, 32)) { dut =>
+      new WishboneReaderTest(dut)
+    } should be(true)
+  }
   it should "trigger interrupts" in {
     chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
       new InterruptController) { dut =>

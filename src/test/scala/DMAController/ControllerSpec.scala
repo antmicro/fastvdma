@@ -35,5 +35,7 @@ class ControllerSpec extends FlatSpec with Matchers{
           new ImageTransfer(dut, new DMAFullStream(dut))
         } should be(true)
       }
+
+    case _ => ()
   }
 }
