@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2021 Antmicro
+Copyright (C) 2019-2022 Antmicro
 
 http://www.apache.org/licenses/LICENSE-2.0
 
