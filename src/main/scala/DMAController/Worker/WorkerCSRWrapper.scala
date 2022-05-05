@@ -81,7 +81,7 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
   addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(io.csr(11))
 
   StatusCSR(version, io.csr(12))
-  StatusCSR(version, io.csr(13))
+  StatusCSR(config, io.csr(13))
 
   for(i <- 14 until DMATop.controlRegCount){
     SimpleCSR(io.csr(i))
