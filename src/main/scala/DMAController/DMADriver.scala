@@ -14,6 +14,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-object DMADriver extends App{
-  chisel3.Driver.execute(args, () => new DMATop)
+import chisel3.stage.ChiselStage
+object DMADriver extends App {
+  (new ChiselStage).emitVerilog(new DMATop)
 }
