@@ -28,7 +28,7 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
 
 name := "chisel-dma"
 
-version := "3.1.1"
+version := "3.5.3"
 
 scalaVersion := "2.11.12"
 
