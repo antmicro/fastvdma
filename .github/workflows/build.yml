@@ -9,4 +9,4 @@ jobs:
       - name: Test
         run: |
          ./.github/scripts/setup-environment.sh
-         ./.github/scripts/test.sh
+         make testall

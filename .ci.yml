@@ -8,7 +8,9 @@ before_script:
 
 test:
   script:
-    - ./.github/scripts/test.sh
+    - make testall
+    - mkdir out/
+    - mv out*.png out/
   artifacts:
     paths:
       - out/
