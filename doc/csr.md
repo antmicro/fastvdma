@@ -98,3 +98,17 @@ Writer stride between lines (0x2c)
 |Bit |Name   |Description                                                         |
 |----|-------|--------------------------------------------------------------------|
 |0-31|Stride |Gap between consecutive lines (as number of writer data bus widths) |
+
+Version register (0x30)
+-----------------------
+
+|Bit |Name             |Description                |
+|----|-----------------|---------------------------|
+|0-31|Version register |Holds the FastVDMA version |
+
+Configuration register (0x34)
+-----------------------------
+
+|Bit |Name                   |Description                          |
+|----|-----------------------|-------------------------------------|
+|0-31|Configuration register |Reader, writer and control bus types |
