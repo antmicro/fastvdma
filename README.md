@@ -55,25 +55,39 @@ Simulation
 
 FastVDMA can be simulated as a whole but certain components can be tested separately.
 
-You can simulate the full design by running:
+You can simulate the full memory to memory design by running:
+
+`make testM2M`
+
+The full stream to memory test by:
+
+`make testS2M`
+
+To run both full tests:
 
 `make test`
 
-To run all tests, including the full test mentioned above, execute:
+To run all tests, including all mentioned above, execute:
 
 `make testall`
 
 Each testrun generates a `.vcd` file which can be opened using GTKWave or any other `.vcd` viewer.
 Output files are located in a separate subdirectories inside the `test_run_dir` directory.
 
-The full test should generate an `out.png` file demonstrating a 2D transfer with configurable stride. The resulting image should look similar to: 
+The full test should generate an `out.png` file demonstrating a 2D transfer with configurable stride. The resulting image should look similar to:
 
 ![Reference image](doc/ref-output.png)
 
 Synthesis
 ---------
 
-To generate a synthesizable verilog file, run:
+To generate a synthesizable verilog file choose a valid configuration via exporting `DMACONFIG`, i.e.
+
+`export DMACONFIG=AXI_AXIL_AXI`
+
+List of all valid DMA configurations you can find in [DMAConfig](src/main/scala/DMAController/DMAConfig.scala#51) file.
+
+After setting the `DMACONFIG` variable, run:
 
 `make verilog`
 
@@ -87,7 +101,7 @@ Current register layout is shown in the table below:
 |Address | Role                       |
 |--------|----------------------------|
 |`0x00`  |Control register            |
-|`0x04`  |Status register             | 
+|`0x04`  |Status register             |
 |`0x08`  |Interrupt mask regiser      |
 |`0x0c`  |Interrupt status register   |
 |`0x10`  |Reader start address        |
