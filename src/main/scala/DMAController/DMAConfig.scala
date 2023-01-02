@@ -38,8 +38,7 @@ object DMATop {
 }
 
 object DMAIOConfig {
-  import DMATop._
-  /* Supported buses */
+/* Supported buses */
   val AXI = 0
   val AXIL = 1
   val AXIS = 2
