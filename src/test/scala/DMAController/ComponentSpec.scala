@@ -17,62 +17,39 @@ package DMAController
 import DMAController.Frontend._
 import DMAController.Worker.{AddressGenerator, AddressGeneratorTest, InterruptController, InterruptControllerTest, TransferSplitter, TransferSplitterTest}
 import org.scalatest.{FlatSpec, Matchers}
+import chisel3._
+import chiseltest._
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.flatspec.AnyFlatSpec
 
-class ComponentSpec extends FlatSpec with Matchers{
+class ComponentSpec extends AnyFlatSpec with ChiselScalatestTester{
   behavior of "ComponentSpec"
 
   it should "generate addresses" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new AddressGenerator(32, 32)) { dut =>
-      new AddressGeneratorTest(dut)
-    } should be(true)
+    test(new AddressGenerator(32, 32)).runPeekPoke(new AddressGeneratorTest(_))
   }
   it should "split transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new TransferSplitter(32, 32, 256, false)) { dut =>
-      new TransferSplitterTest(dut)
-    } should be(true)
+      test(new TransferSplitter(32, 32, 256, false)).runPeekPoke(new TransferSplitterTest(_))
   }
   it should "perform AXI Stream master transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new AXIStreamMaster(32, 32)) { dut =>
-      new AXIStreamMasterTest(dut)
-    } should be(true)
+      test(new AXIStreamMaster(32, 32)).runPeekPoke(new AXIStreamMasterTest(_))
   }
   it should "perform AXI Stream slave transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new AXIStreamSlave(32, 32)) { dut =>
-      new AXIStreamSlaveTest(dut)
-    } should be(true)
+      test(new AXIStreamSlave(32, 32)).runPeekPoke(new AXIStreamSlaveTest(_))
   }
   it should "perform AXI4 write transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new AXI4Writer(32, 32)) { dut =>
-      new AXI4WriterTest(dut)
-    } should be(true)
+      test(new AXI4Writer(32, 32)).runPeekPoke(new AXI4WriterTest(_))
   }
   it should "perform AXI4 read transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new AXI4Reader(32, 32)) { dut =>
-      new AXI4ReaderTest(dut)
-    } should be(true)
+      test(new AXI4Reader(32, 32)).runPeekPoke(new AXI4ReaderTest(_))
   }
   it should "perform Wishbone write transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new WishboneClassicPipelinedWriter(32, 32)) { dut =>
-      new WishboneWriterTest(dut)
-    } should be(true)
+      test(new WishboneClassicPipelinedWriter(32, 32)).runPeekPoke(new WishboneWriterTest(_))
   }
   it should "perform Wishbone read transfers" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new WishboneClassicPipelinedReader(32, 32)) { dut =>
-      new WishboneReaderTest(dut)
-    } should be(true)
+      test(new WishboneClassicPipelinedReader(32, 32)).runPeekPoke(new WishboneReaderTest(_))
   }
   it should "trigger interrupts" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-      new InterruptController) { dut =>
-      new InterruptControllerTest(dut)
-    } should be(true)
+      test(new InterruptController).runPeekPoke(new InterruptControllerTest(_))
   }
 }

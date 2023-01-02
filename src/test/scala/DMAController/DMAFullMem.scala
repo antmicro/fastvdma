@@ -14,13 +14,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import scala.reflect.runtime.universe._
-import DMAController.Bfm._
-import DMAController.Bus._
+import DMAController.Bfm.{AxiLiteMasterBfm, Axi4MemoryBfm}
+import DMAController.Bus.{AXI4Lite, AXI4}
 import DMAController.Worker.{InterruptBundle, SyncBundle}
-import chisel3.iotesters._
-import chisel3._
-import java.util._
+import chisel3.{Bits, Bundle}
 
 class DMAFullMem(dut: DMATop) extends DMAFull(dut) {
   val width = 256
@@ -32,7 +29,7 @@ class DMAFullMem(dut: DMATop) extends DMAFull(dut) {
                                 val irq: InterruptBundle
                                 val sync: SyncBundle}]
 
-  val control = new AxiLiteMasterBfm(io.control, peek, poke, println)
-  val reader = new Axi4MemoryBfm(io.read, width * height, peek, poke, println)
-  val writer = new Axi4MemoryBfm(io.write, width * height, peek, poke, println)
+  val control = new AxiLiteMasterBfm(io.control, peek[Bits], poke[Bits], println)
+  val reader = new Axi4MemoryBfm(io.read, width * height, peek[Bits], poke[Bits], println)
+  val writer = new Axi4MemoryBfm(io.write, width * height, peek[Bits], poke[Bits], println)
 }

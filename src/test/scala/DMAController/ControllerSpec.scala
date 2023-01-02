@@ -14,26 +14,21 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import org.scalatest.{FlatSpec, Matchers}
+import chiseltest.ChiselScalatestTester
+import org.scalatest.flatspec.AnyFlatSpec
 
-class ControllerSpec extends FlatSpec with Matchers{
+class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester{
   behavior of "ControllerSpec"
   val dma_config = System.getenv("DMACONFIG")
   dma_config match {
     case "AXI_AXIL_AXI" =>
       it should "perform 2D MM2MM transfer with stride mem to mem" in {
-       chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-          new DMATop) { dut =>
-          new ImageTransfer(dut, new DMAFullMem(dut))
-        } should be(true)
+        test(new DMATop).runPeekPoke(dut => new ImageTransfer(dut, new DMAFullMem(dut)))
       }
 
     case "AXIS_AXIL_AXI" =>
       it should "perform 2D S2MM transfer with stride stream to mem" in {
-       chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () =>
-          new DMATop) { dut =>
-          new ImageTransfer(dut, new DMAFullStream(dut))
-        } should be(true)
+        test(new DMATop).runPeekPoke(dut => new ImageTransfer(dut, new DMAFullStream(dut)))
       }
 
     case _ => ()

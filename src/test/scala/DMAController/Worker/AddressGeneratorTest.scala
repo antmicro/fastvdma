@@ -14,9 +14,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Worker
 
-import chisel3.iotesters._
+//import chisel3.iotesters._
+import chiseltest.iotesters.PeekPokeTester
 
-class AddressGeneratorTest(dut : AddressGenerator) extends PeekPokeTester(dut){
+class AddressGeneratorTest(dut : AddressGenerator) extends PeekPokeTester(dut) {
   poke(dut.io.ctl.start, 0)
   poke(dut.io.ctl.startAddress, 0x80000000)
   poke(dut.io.ctl.lineLength, 21)
@@ -36,5 +37,4 @@ class AddressGeneratorTest(dut : AddressGenerator) extends PeekPokeTester(dut){
     poke(dut.io.xfer.done, 0)
     step(10)
   }
-
 }

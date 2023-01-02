@@ -14,7 +14,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Worker
 
-import chisel3.iotesters._
+import chiseltest.iotesters.PeekPokeTester
 
 class TransferSplitterTest(dut : TransferSplitter) extends PeekPokeTester(dut){
   poke(dut.io.xferIn.address, 16)

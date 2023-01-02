@@ -14,7 +14,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Frontend
 
-import chisel3.iotesters._
+import chiseltest.iotesters.PeekPokeTester
 import DMAController.TestUtil.WaitRange._
 
 class AXIStreamMasterTest(dut : AXIStreamMaster) extends PeekPokeTester(dut){
