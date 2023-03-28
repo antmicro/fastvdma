@@ -45,7 +45,7 @@ class DMATop(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
 
   val ctl = Module(new WorkerCSRWrapper(dmaConfig))
 
-  val queue = Queue(readerFrontend.io.dataIO, dmaConfig.fifoDepth)
+  val queue = DMAQueue(readerFrontend.io.dataIO, dmaConfig)
   queue <> writerFrontend.io.dataIO
 
   csrFrontend.io.ctl <> io.control

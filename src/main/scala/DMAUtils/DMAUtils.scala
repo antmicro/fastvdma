@@ -1,6 +1,7 @@
 package DMAUtils
 
 import chisel3._
+import chisel3.util._
 import play.api.libs.json._
 import java.io.{FileNotFoundException, IOException}
 import DMAController.DMAConfig._
@@ -91,4 +92,32 @@ object DMALogger {
       println(s"${colorToAnsi(Orange)}[WARN] ${msg}${escape}")
   def error(msg: String): Unit =
     if (isErrorEnabled()) println(s"${colorToAnsi(Red)}[ERROR] ${msg}${escape}")
+}
+
+class DMAQueue[T <: Data](gen: T, dmaConfig: DMAConfig)
+    extends Queue(gen, dmaConfig.fifoDepth) {
+      override val desiredName = s"DMAQueue${dmaConfig.busConfig}"
+}
+
+object DMAQueue {
+    def apply[T <: Data](
+        enq: ReadyValidIO[T],
+        dmaConfig: DMAConfig,
+        flush: Option[Bool] = None
+    ): DecoupledIO[T] = {
+      if (dmaConfig.fifoDepth == 0) {
+        val deq = Wire(new DecoupledIO(chiselTypeOf(enq.bits)))
+        deq.valid := enq.valid
+        deq.bits := enq.bits
+        enq.ready := deq.ready
+        deq
+      } else {
+        val q = Module(new DMAQueue(chiselTypeOf(enq.bits), dmaConfig))
+        q.io.flush.zip(flush).foreach(f => f._1 := f._2)
+        q.io.enq.valid := enq.valid
+        q.io.enq.bits := enq.bits
+        enq.ready := q.io.enq.ready
+        TransitName(q.io.deq, q)
+      }
+    }
 }
