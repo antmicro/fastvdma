@@ -74,24 +74,47 @@ To run all tests, including all mentioned above, execute:
 Each testrun generates a `.vcd` file which can be opened using GTKWave or any other `.vcd` viewer.
 Output files are located in a separate subdirectories inside the `test_run_dir` directory.
 
-The full test should generate an `out.png` file demonstrating a 2D transfer with configurable stride. The resulting image should look similar to:
+The full test should generate an `outM2M.png/outS2M.png` file demonstrating a 2D transfer with configurable stride. The resulting image should look similar to:
 
 ![Reference image](doc/ref-output.png)
 
 Synthesis
 ---------
 
-To generate a synthesizable verilog file choose a valid configuration via exporting `DMACONFIG`, i.e.
-
-`export DMACONFIG=AXI_AXIL_AXI`
-
-List of all valid DMA configurations you can find in [DMAConfig](src/main/scala/DMAController/DMAConfig.scala#51) file.
-
-After setting the `DMACONFIG` variable, run:
+To generate a synthesizable verilog file either proceeed with the default configuration by running:
 
 `make verilog`
 
-The generated file will be named `DMATop$(DMACONFIG).v` where `DMACONFIG` is chosen DMA configuration. Verilog module will be named in the same manner.
+Or provide a valid configuration file with:
+
+`make CONFIG_FILE=<path_to_json_file> verilog`
+
+The generated file will be named `DMATop$(configuration).v` where `configuration` is chosen configuration of buses in the DMA. Verilog module will be named in the same manner.
+
+Configuration file
+---------
+
+A configuration file should be written in json. Here's an example configuration:
+```
+{
+    "configuration": "AXI_AXIL_AXI",
+    "addrWidth": 32,
+    "readDataWidth": 32,
+    "writeDataWidth": 32,
+    "readMaxBurst": 0,
+    "writeMaxBurst": 16,
+    "reader4KBarrier": false,
+    "writer4KBarrier": true,
+    "controlDataWidth": 32,
+    "controlAddrWidth": 32,
+    "controlRegCount": 16,
+    "fifoDepth": 512
+}
+```
+
+The `configuration` field specifies the choice of buses for data transfer (the 1st and 3rd element) and CSR handling (the 2nd element).
+
+List of all supported DMA bus configurations is available in the [DMAConfig](src/main/scala/DMAController/DMAConfig.scala#51) file.
 
 Register map
 ------------
@@ -119,14 +142,13 @@ For a detailed description of register fields check [Register fields](doc/csr.md
 
 You can also check [WorkerCSRWrapper](src/main/scala/DMAController/Worker/WorkerCSRWrapper.scala) for more details on how the CSRs are attached to the DMA logic (`io.csr(0)` refers to `0x00`, `io.csr(1)` to `0x04` and so on).
 
-Customizing FastVDMA
+Tests on customized FastVDMA
 --------------------
 
-Configuration for the DMA is located in the [DMAConfig](src/main/scala/DMAController/DMAConfig.scala) file.
-Most of the settings, such as address/data widths, are defined in the `DMAParams` object. Please verify if those parameters comply with your configuration.
-To change which buses are used you need to set the `DMACONFIG` environment variable. All possible configurations are listed in the map in `DMAConfig` file. The `DMACONFIG` variable consists of names for reader, control and writer buses.
-For example, to generate a design consisting of AXI Stream reader, AXI4 writer and AXILite control you would need to set `DMACONFIG` to `AXIS_AXIL_AXI`.
-However, if you would like to run already written tests on your specified configuration you will also need to cast buses in `io` field in `DMAFull` accordingly to chosen cofiguration. Example:
+If you would like to reuse provided tests to test your custom model you will need to write a test file similar to [DMAFullMem](src/test/scala/DMAController/DMAFullMem.scala).
+
+What you need to alter is:
+- Cast buses in the `io` field accordingly to chosen configuration. Example for `AXIS_AXIL_AXI` bus configuration:
 
 ```
 val io = dut.io.asInstanceOf[Bundle{
@@ -137,14 +159,26 @@ val io = dut.io.asInstanceOf[Bundle{
                                 val sync: SyncBundle}]
 ```
 
-You will also need to remeber to choose correct BFMs:
+- You will also need to remember to provide correct BFMs for the test:
 
 ```
-  val axil_master = new AxiLiteMasterBfm(io.control, peek, poke, println)
-  val axis_master = new AxiStreamMasterBfm(io.read, width, peek, poke, println)
-  val axi4_slave = new Axi4SlaveBfm(io.write, width * height, peek, poke, println)
+  val control = new AxiLiteMasterBfm(io.control, peek, poke, println)
+  val reader = new AxiStreamMasterBfm(io.read, width, peek, poke, println)
+  val writer = new Axi4SlaveBfm(io.write, width * height, peek, poke, println)
 ```
 
+- Lastly, add an entry in [ControllerSpec](src/test/scala/DMAController/ControllerSpec.scala) (or write your Tester):
+
+```
+val myConfiguration = new DMAConfig(...)
+it should "perform image transfer with my custom configuration" in {
+    test(new DMATop(myConfiguration)).runPeekPoke(dut =>
+      new ImageTransfer(dut, new <CustomTestClassName>(dut), myConfiguration)
+    )
+  }
+```
+
+After successful test, the image `out$(configuration).rgba` will be produced (where `configuration` is the DMA bus configuration).
 
 Source code structure
 ---------------------
@@ -152,11 +186,11 @@ Source code structure
   - [Bus](src/main/scala/DMAController/Bus) contains definitions of various bus bundles
   - [CSR](src/main/scala/DMAController/CSR) contains code responsible for handling configuration registers
   - [Frontend](src/main/scala/DMAController/Frontend) contains modules handling various bus types
-  - [Worker](src/main/scala/DMAController/Worker) contains generic code supporting controlling the DMA behaviour
+  - [Worker](src/main/scala/DMAController/Worker) contains generic code supporting controlling the DMA behavior
 - [src/test/scala/DMAController](src/test/scala/DMAController) contains tests
   - [Bfm](src/test/scala/DMAController/Bfm) contains Bus models that are used in full configuration tests
   - [Frontend](src/test/scala/DMAController/Frontend) contains tests used for generating timing diagrams for various bus types
-  - [Worker](src/test/scala/DMAController/Worker) contains tests that generate timinig diagrams for the generic part of the DMA
+  - [Worker](src/test/scala/DMAController/Worker) contains tests that generate timing diagrams for the generic part of the DMA
 
 Linux drivers
 -------------
