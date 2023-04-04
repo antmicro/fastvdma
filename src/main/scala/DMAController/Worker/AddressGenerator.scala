@@ -48,15 +48,15 @@ class AddressGenerator(val addrWidth: Int, val dataWidth: Int,
   io.xfer.first := first
   io.ctl.busy := busy
 
-  when(state === sIdle){
+  when(state === sIdle) {
     busy := false.B
-  }.otherwise{
+  }.otherwise {
     busy := true.B
   }
 
-  switch(state){
-    is(sIdle){
-      when(io.ctl.start){
+  switch(state) {
+    is(sIdle) {
+      when(io.ctl.start) {
         state := sLine
 
         address_i := io.ctl.startAddress
@@ -66,7 +66,7 @@ class AddressGenerator(val addrWidth: Int, val dataWidth: Int,
         first := true.B
       }
     }
-    is(sLine){
+    is(sLine) {
 
       valid := true.B
       address_o := address_i
@@ -76,13 +76,13 @@ class AddressGenerator(val addrWidth: Int, val dataWidth: Int,
       lineCount := lineCount - 1.U
       state := sLineWait
     }
-    is(sLineWait){
+    is(sLineWait) {
       valid := false.B
       first := false.B
-      when(io.xfer.done){
-        when(lineCount > 0.U){
+      when(io.xfer.done) {
+        when(lineCount > 0.U) {
           state := sLine
-        }.otherwise{
+        }.otherwise {
           state := sIdle
         }
       }

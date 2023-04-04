@@ -23,12 +23,12 @@ import DMAController.DMADriver
 class TransferSplitter(val addressWidth: Int, val dataWidth: Int,
     val maxLength: Int, val canCrossBarrier: Boolean, dmaConfig: DMAConfig
 ) extends DMAModule(dmaConfig) {
-  val io = IO(new Bundle{
+  val io = IO(new Bundle {
     val xferIn = Flipped(new XferDescBundle(addressWidth))
     val xferOut = new XferDescBundle(addressWidth)
   })
 
-  if(maxLength != 0) {
+  if (maxLength != 0) {
     val sIdle :: sSplit :: sSplitWait :: Nil = Enum(3)
 
     val dataBytes: Int = dataWidth / 8

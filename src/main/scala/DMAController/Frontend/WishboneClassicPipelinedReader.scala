@@ -57,8 +57,8 @@ class WishboneClassicPipelinedReader(val addrWidth: Int, val dataWidth: Int,
 
   io.xfer.done := done
 
-  switch(state){
-    is(sIdle){
+  switch(state) {
+    is(sIdle) {
       done := false.B
       when(io.xfer.valid) {
         state := sWait
@@ -67,19 +67,19 @@ class WishboneClassicPipelinedReader(val addrWidth: Int, val dataWidth: Int,
         adr := io.xfer.address
       }
     }
-    is(sWait){
-      when(ackCnt === 0.U && stbCnt === 0.U){
+    is(sWait) {
+      when(ackCnt === 0.U && stbCnt === 0.U) {
         state := sIdle
         done := true.B
       }
     }
   }
 
-  when(ackCnt =/= 0.U && io.bus.ack_i){
+  when(ackCnt =/= 0.U && io.bus.ack_i) {
     ackCnt := ackCnt - 1.U
   }
 
-  when(stbCnt =/= 0.U && ready){
+  when(stbCnt =/= 0.U && ready) {
     adr := adr + (dataWidth / 8).U
     stbCnt := stbCnt - 1.U
   }

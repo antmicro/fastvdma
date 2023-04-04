@@ -27,7 +27,7 @@ class DMATop(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
   val (reader, ccsr, writer) = dmaConfig.getBusConfig()
   val Bus = new Bus(dmaConfig)
 
-  val io = IO(new Bundle{
+  val io = IO(new Bundle {
     val control = Bus.getControlBus(ccsr)
     val read = Bus.getReaderBus(reader)
     val write = Bus.getWriterBus(writer)

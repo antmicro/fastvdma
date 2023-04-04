@@ -32,14 +32,14 @@ class CSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
     when(io.bus.addr === i.U && io.bus.read){
       data := io.csr(i).dataIn
       io.csr(i).dataRead := true.B
-    }.otherwise{
+    }.otherwise {
       io.csr(i).dataRead := false.B
     }
 
-    when(io.bus.addr === i.U && io.bus.write){
+    when(io.bus.addr === i.U && io.bus.write) {
       io.csr(i).dataOut := io.bus.dataOut
       io.csr(i).dataWrite := true.B
-    }.otherwise{
+    }.otherwise {
       io.csr(i).dataWrite := false.B
       io.csr(i).dataOut := 0.U
     }

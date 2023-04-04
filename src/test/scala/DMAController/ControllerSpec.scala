@@ -18,7 +18,7 @@ import chiseltest.ChiselScalatestTester
 import org.scalatest.flatspec.AnyFlatSpec
 import DMAController.DMAConfig._
 
-class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester{
+class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "ControllerSpec"
   val dmaConfigMM2MM = new DMAConfig("AXI_AXIL_AXI")
   it should "perform 2D MM2MM transfer with stride mem to mem" in {

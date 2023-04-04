@@ -48,7 +48,6 @@ class WishboneClassicWriter(val addrWidth: Int, val dataWidth: Int,
   io.bus.dat_o := io.dataIO.bits
   io.dataIO.ready := ready
 
-
   io.bus.we_o := true.B
   io.bus.sel_o := ~0.U((dataWidth / 8).W)
   io.bus.adr_o := adr(addrWidth - 1, log2Ceil(dataWidth / 8))
@@ -57,8 +56,8 @@ class WishboneClassicWriter(val addrWidth: Int, val dataWidth: Int,
 
   io.xfer.done := done
 
-  switch(state){
-    is(sIdle){
+  switch(state) {
+    is(sIdle) {
       done := false.B
       when(io.xfer.valid) {
         state := sWait
@@ -66,15 +65,15 @@ class WishboneClassicWriter(val addrWidth: Int, val dataWidth: Int,
         adr := io.xfer.address
       }
     }
-    is(sWait){
-      when(stbCnt === 0.U){
+    is(sWait) {
+      when(stbCnt === 0.U) {
         state := sIdle
         done := true.B
       }
     }
   }
 
-  when(stbCnt =/= 0.U && ready){
+  when(stbCnt =/= 0.U && ready) {
     adr := adr + (dataWidth / 8).U
     stbCnt := stbCnt - 1.U
   }

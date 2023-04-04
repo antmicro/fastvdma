@@ -32,19 +32,19 @@ class WishboneCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
 
   val state = RegInit(sIdle)
 
-  val ack  = RegInit(false.B)
+  val ack = RegInit(false.B)
 
   val valid = WireInit(io.ctl.stb_i & io.ctl.cyc_i)
 
-  switch(state){
-    is(sIdle){
+  switch(state) {
+    is(sIdle) {
       ack := false.B
-      when(io.ctl.stb_i & io.ctl.cyc_i){
+      when(io.ctl.stb_i & io.ctl.cyc_i) {
         state := sAck
         ack := true.B
       }
     }
-    is(sAck){
+    is(sAck) {
       ack := false.B
       state := sIdle
     }

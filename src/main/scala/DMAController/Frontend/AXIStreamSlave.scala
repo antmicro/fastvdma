@@ -51,27 +51,27 @@ class AXIStreamSlave(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfi
 
   io.xfer.done := done
 
-  switch(state){
-    is(sIdle){
+  switch(state) {
+    is(sIdle) {
       done := false.B
       enable := false.B
 
-      when(io.xfer.valid){
+      when(io.xfer.valid) {
         state := sTransfer
         length := io.xfer.length
         enable := true.B
       }
     }
-    is(sTransfer){
-      when(ready && valid){
+    is(sTransfer) {
+      when(ready && valid) {
         length := length - 1.U
-        when(length === 1.U){
+        when(length === 1.U) {
           state := sDone
           enable := false.B
         }
       }
     }
-    is(sDone){
+    is(sDone) {
       state := sIdle
       done := true.B
     }

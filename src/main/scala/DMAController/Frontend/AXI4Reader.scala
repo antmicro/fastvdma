@@ -41,7 +41,7 @@ class AXI4Reader(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
   val araddr = RegInit(0.U(addrWidth.W))
   val arlen = RegInit(0.U(AXI4.lenWidth.W))
   val arvalid = RegInit(false.B)
-  val arsize = WireInit(log2Ceil(dataWidth/8).U)
+  val arsize = WireInit(log2Ceil(dataWidth / 8).U)
 
   val ready = WireInit(io.dataIO.ready && enable)
   val valid = WireInit(io.bus.r.rvalid && enable)
@@ -56,32 +56,32 @@ class AXI4Reader(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
   io.dataIO.bits := io.bus.r.rdata
   io.xfer.done := done
 
-  switch(state){
-    is(sIdle){
+  switch(state) {
+    is(sIdle) {
       done := false.B
-      when(io.xfer.valid){
+      when(io.xfer.valid) {
         state := sAddr
         arvalid := true.B
         araddr := io.xfer.address
         arlen := io.xfer.length - 1.U
       }
     }
-    is(sAddr){
-      when(arvalid && io.bus.ar.arready){
+    is(sAddr) {
+      when(arvalid && io.bus.ar.arready) {
         state := sTransfer
         arvalid := false.B
         enable := true.B
       }
     }
-    is(sTransfer){
-      when(ready && valid){
-        when(io.bus.r.rlast){
+    is(sTransfer) {
+      when(ready && valid) {
+        when(io.bus.r.rlast) {
           state := sDone
           enable := false.B
         }
       }
     }
-    is(sDone){
+    is(sDone) {
       done := true.B
       state := sIdle
     }

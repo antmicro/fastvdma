@@ -58,48 +58,48 @@ class AXI4LiteCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
   io.bus.write := io.ctl.w.wvalid && wready
   io.bus.addr := addr
 
-  switch(state){
-    is(sIdle){
-      when(io.ctl.aw.awvalid){
+  switch(state) {
+    is(sIdle) {
+      when(io.ctl.aw.awvalid) {
         state := sWriteAddr
         addr := io.ctl.aw.awaddr(5, 2)
         awready := true.B
 
-      }.elsewhen(io.ctl.ar.arvalid){
+      }.elsewhen(io.ctl.ar.arvalid) {
         state := sReadAddr
         addr := io.ctl.ar.araddr(5, 2)
         arready := true.B
       }
     }
-    is(sReadAddr){
-      when(io.ctl.ar.arvalid && arready){
+    is(sReadAddr) {
+      when(io.ctl.ar.arvalid && arready) {
         state := sReadData
         arready := false.B
         rvalid := true.B
       }
     }
-    is(sReadData){
-      when(io.ctl.r.rready && rvalid){
+    is(sReadData) {
+      when(io.ctl.r.rready && rvalid) {
         state := sIdle
         rvalid := false.B
       }
     }
-    is(sWriteAddr){
-      when(io.ctl.aw.awvalid && awready){
+    is(sWriteAddr) {
+      when(io.ctl.aw.awvalid && awready) {
         state := sWriteData
         awready := false.B
         wready := true.B
       }
     }
-    is(sWriteData){
-      when(io.ctl.w.wvalid && wready){
+    is(sWriteData) {
+      when(io.ctl.w.wvalid && wready) {
         state := sWriteResp
         wready := false.B
         bvalid := true.B
       }
     }
-    is(sWriteResp){
-      when(io.ctl.b.bready && bvalid){
+    is(sWriteResp) {
+      when(io.ctl.b.bready && bvalid) {
         state := sIdle
         bvalid := false.B
       }

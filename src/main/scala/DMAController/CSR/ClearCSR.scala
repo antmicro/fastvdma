@@ -30,9 +30,9 @@ class ClearCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
   io.csr.dataIn := reg
   io.value := reg
 
-  when(io.csr.dataWrite){
+  when(io.csr.dataWrite) {
     reg := io.csr.dataOut
-  }.otherwise{
+  }.otherwise {
     reg := reg & (~io.clear).asUInt
   }
 }

@@ -23,7 +23,7 @@ import DMAController.DMAConfig._
 
 class AXIStreamMaster(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
     extends IOBus[AXIStream](dmaConfig) {
-  val io = IO(new Bundle{
+  val io = IO(new Bundle {
     val bus = new AXIStream(dataWidth)
 
     val dataIO = DeqIO(UInt(dataWidth.W))
@@ -57,29 +57,29 @@ class AXIStreamMaster(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConf
 
   last := length === 1.U
 
-  switch(state){
-    is(sIdle){
+  switch(state) {
+    is(sIdle) {
       done := false.B
       enable := false.B
 
-      when(io.xfer.valid){
+      when(io.xfer.valid) {
         user := io.xfer.first
         state := sTransfer
         length := io.xfer.length
         enable := true.B
       }
     }
-    is(sTransfer){
-      when(ready && valid){
+    is(sTransfer) {
+      when(ready && valid) {
         user := false.B
         length := length - 1.U
-        when(length === 1.U){
+        when(length === 1.U) {
           state := sDone
           enable := false.B
         }
       }
     }
-    is(sDone){
+    is(sDone) {
       state := sIdle
       done := true.B
     }

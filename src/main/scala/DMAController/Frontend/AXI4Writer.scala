@@ -23,7 +23,7 @@ import DMAController.DMAConfig._
 
 class AXI4Writer(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
     extends IOBus[AXI4](dmaConfig) {
-  val io = IO(new Bundle{
+  val io = IO(new Bundle {
     val bus = new AXI4(addrWidth, dataWidth)
 
     val dataIO = DeqIO(UInt(dataWidth.W))
@@ -43,9 +43,8 @@ class AXI4Writer(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
   val length = RegInit(0.U(addrWidth.W))
   val awlen = RegInit(0.U(addrWidth.W))
   val awaddr = RegInit(0.U(addrWidth.W))
-  val awsize = WireInit(log2Ceil(dataWidth/8).U)
-  val wstrb = WireInit(~0.U((dataWidth/8).W))
-
+  val awsize = WireInit(log2Ceil(dataWidth / 8).U)
+  val wstrb = WireInit(~0.U((dataWidth / 8).W))
 
   val awvalid = RegInit(false.B)
   val bready = RegInit(false.B)
@@ -65,55 +64,55 @@ class AXI4Writer(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
 
   last := length === 1.U
 
-  switch(dataState){
-    is(sDataIdle){
+  switch(dataState) {
+    is(sDataIdle) {
       done := false.B
-      when(io.xfer.valid){
+      when(io.xfer.valid) {
         length := io.xfer.length
         dataState := sDataTransfer
         enable := true.B
       }
     }
-    is(sDataTransfer){
-      when(ready && valid){
-        when(length > 1.U){
+    is(sDataTransfer) {
+      when(ready && valid) {
+        when(length > 1.U) {
           length := length - 1.U
-        }.otherwise{
+        }.otherwise {
           dataState := sDataResp
           enable := false.B
           bready := true.B
         }
       }
     }
-    is(sDataResp){
-      when(bready && io.bus.b.bvalid){
+    is(sDataResp) {
+      when(bready && io.bus.b.bvalid) {
         bready := false.B
         dataState := sDataDone
       }
     }
-    is(sDataDone){
+    is(sDataDone) {
       done := true.B
       dataState := sDataIdle
     }
   }
 
-  switch(addrState){
-    is(sAddrIdle){
-      when(io.xfer.valid){
+  switch(addrState) {
+    is(sAddrIdle) {
+      when(io.xfer.valid) {
         awaddr := io.xfer.address
         awlen := io.xfer.length - 1.U
         awvalid := true.B
         addrState := sAddrTransfer
       }
     }
-    is(sAddrTransfer){
-      when(awvalid && io.bus.aw.awready){
+    is(sAddrTransfer) {
+      when(awvalid && io.bus.aw.awready) {
         addrState := sAddrDone
         awvalid := false.B
       }
     }
-    is(sAddrDone){
-      when(done){
+    is(sAddrDone) {
+      when(done) {
         addrState := sAddrIdle
       }
     }

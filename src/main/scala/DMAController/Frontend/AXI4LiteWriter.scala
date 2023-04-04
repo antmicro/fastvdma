@@ -59,49 +59,49 @@ class AXI4LiteWriter(val addrWidth: Int, val dataWidth: Int,
 
   io.xfer.done := done
 
-  switch(dataState){
-    is(sDataIdle){
+  switch(dataState) {
+    is(sDataIdle) {
       done := false.B
-      when(io.xfer.valid){
+      when(io.xfer.valid) {
         dataState := sDataTransfer
         enable := true.B
       }
     }
-    is(sDataTransfer){
-      when(ready && valid){
+    is(sDataTransfer) {
+      when(ready && valid) {
         dataState := sDataResp
         enable := false.B
         bready := true.B
       }
     }
-    is(sDataResp){
-      when(bready && io.bus.b.bvalid){
+    is(sDataResp) {
+      when(bready && io.bus.b.bvalid) {
         bready := false.B
         dataState := sDataDone
       }
     }
-    is(sDataDone){
+    is(sDataDone) {
       done := true.B
       dataState := sDataIdle
     }
   }
 
-  switch(addrState){
-    is(sAddrIdle){
-      when(io.xfer.valid){
+  switch(addrState) {
+    is(sAddrIdle) {
+      when(io.xfer.valid) {
         awaddr := io.xfer.address
         awvalid := true.B
         addrState := sAddrTransfer
       }
     }
-    is(sAddrTransfer){
-      when(awvalid && io.bus.aw.awready){
+    is(sAddrTransfer) {
+      when(awvalid && io.bus.aw.awready) {
         addrState := sAddrDone
         awvalid := false.B
       }
     }
-    is(sAddrDone){
-      when(done){
+    is(sAddrDone) {
+      when(done) {
         addrState := sAddrIdle
       }
     }
