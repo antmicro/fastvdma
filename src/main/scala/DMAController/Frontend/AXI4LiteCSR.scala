@@ -16,15 +16,16 @@ package DMAController.Frontend
 
 import DMAController.Bus.AXI4Lite
 import DMAController.CSR.{CSR, CSRBusBundle}
-import DMAController.DMAConfig._
 import DMAController.Worker.{WorkerCSRWrapper}
 import chisel3._
 import chisel3.util._
+import DMAController.DMAConfig._
 
-class AXI4LiteCSR(addrWidth : Int) extends CSRBus[AXI4Lite]{
-  val io = IO(new Bundle{
-    val ctl = Flipped(new AXI4Lite(addrWidth, DMATop.controlDataWidth))
-    val bus = new CSRBusBundle
+class AXI4LiteCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
+    dmaConfig: DMAConfig) extends CSRBus[AXI4Lite](dmaConfig) {
+  val io = IO(new Bundle {
+    val ctl = Flipped(new AXI4Lite(addrWidth, dataWidth))
+    val bus = new CSRBusBundle(regCount, dataWidth)
   })
 
   val sIdle :: sReadAddr :: sReadData :: sWriteAddr :: sWriteData :: sWriteResp :: Nil = Enum(6)

@@ -21,34 +21,36 @@ import DMAController.Frontend._
 import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
 import chisel3.util.Queue
 
-object DMATop {
-  val addrWidth = 32
-  val readDataWidth = 32
-  val writeDataWidth = 32
-  val readMaxBurst = 0
-  val writeMaxBurst = 256
-  val reader4KBarrier = false
-  val writer4KBarrier = true
+class DMAConfig(
+    val busConfig: String = "AXI_AXIL_AXI",
+    val addrWidth: Int = 32,
+    val readDataWidth: Int = 32,
+    val writeDataWidth: Int = 32,
+    val readMaxBurst: Int = 0,
+    val writeMaxBurst: Int = 16,
+    val reader4KBarrier: Boolean = false,
+    val writer4KBarrier: Boolean = true,
+    val controlDataWidth: Int = 32,
+    val controlAddrWidth: Int = 32,
+    val controlRegCount: Int = 16,
+    val fifoDepth: Int = 512
+) {
+  assert(DMAConfig.isValid(busConfig))
+  assert(readDataWidth == writeDataWidth)
 
-  val controlDataWidth = 32
-  val controlAddrWidth = 32
-  val controlRegCount = 16
-
-  val fifoDepth = 512
+  def getBusConfig() = DMAConfig.getBusConfig(busConfig)
 }
 
-object DMAIOConfig {
-/* Supported buses */
+object DMAConfig {
+  /* Supported buses */
   val AXI = 0
   val AXIL = 1
   val AXIS = 2
   val WB = 3
   val PWB = 4
 
-  val cfg = System.getenv("DMACONFIG")
-
-// DMA configuration options:
-  var configuration = Map(
+  // DMA configuration options:
+  private val configurations = Map(
 // AXI4 <-> AXI4Lite <-> AXI4
   "AXI_AXIL_AXI" -> (AXI, AXIL, AXI),
 // AXI4 <-> Wishbone Slave <-> AXI4
@@ -114,13 +116,17 @@ object DMAIOConfig {
 // Pipelined Wishbone Master <-> Wishbone Slave <-> Pipelined Wishbone Master
   "PWB_WB_PWB" -> (PWB, WB, PWB))
 
-  def getConfig() : (Int, Int, Int) = {
+  def getBusConfig(cfg: String): (Int, Int, Int) = {
     try {
       configuration.apply(cfg)
     }
     catch {
       case ex :Exception => throw new Exception("Unsupported DMA configuration: " + cfg);
     }
+  }
+
+  def isValid(config: String): Boolean = {
+    configurations.contains(config)
   }
 }
 

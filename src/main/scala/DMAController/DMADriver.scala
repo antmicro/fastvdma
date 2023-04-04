@@ -15,6 +15,26 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController
 
 import chisel3.stage.ChiselStage
+import DMAConfig._
+import DMAUtils.{DMAParseInput, DMAMisc}
+import DMAController.DMAConfig._
+
 object DMADriver extends App {
-  (new ChiselStage).emitVerilog(new DMATop)
+  val config =
+    if (args.length == 0) {
+      DMAMisc.printWithBg("No custom configuration was specified.")
+      DMAMisc.printWithBg("Using default parameters and AXI_AXIL_AXI configuration.")
+      new DMAConfig()
+    } else {
+      DMAMisc.printWithBg("Applying custom configuration")
+      DMAParseInput.parseconfig(args(0)) match {
+        case Left(x) => x
+        case _ => {
+          DMAMisc.printWithBg("Something went wrong when acquiring DMA Parameters")
+          throw new Exception("Invalid configuration")
+        }
+      }
+    }
+
+  (new ChiselStage).emitVerilog(new DMATop(config))
 }

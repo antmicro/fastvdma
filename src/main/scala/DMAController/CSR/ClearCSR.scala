@@ -13,19 +13,19 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package DMAController.CSR
-
-import DMAController.DMAConfig._
+import DMAController.DMADriver
 import DMAUtils.DMAModule
 import chisel3._
+import DMAController.DMAConfig.DMAConfig
 
-class ClearCSR extends DMAModule{
-  val io = IO(new Bundle{
-    val csr = Flipped(new CSRRegBundle())
-    val value = Output(UInt(DMATop.controlDataWidth.W))
-    val clear = Input(UInt(DMATop.controlDataWidth.W))
+class ClearCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
+  val io = IO(new Bundle {
+    val csr = Flipped(new CSRRegBundle(dmaConfig.controlDataWidth))
+    val value = Output(UInt(dmaConfig.controlDataWidth.W))
+    val clear = Input(UInt(dmaConfig.controlDataWidth.W))
   })
 
-  val reg = RegInit(0.U(DMATop.controlDataWidth.W))
+  val reg = RegInit(0.U(dmaConfig.controlDataWidth.W))
 
   io.csr.dataIn := reg
   io.value := reg
@@ -38,8 +38,8 @@ class ClearCSR extends DMAModule{
 }
 
 object ClearCSR {
-  def apply(clear : UInt, csrCtl : CSRRegBundle): UInt = {
-    val csr = Module(new ClearCSR())
+  def apply(clear: UInt, csrCtl: CSRRegBundle, dmaConfig: DMAConfig): UInt = {
+    val csr = Module(new ClearCSR(dmaConfig))
 
     csr.io.clear := clear
 

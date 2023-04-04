@@ -14,14 +14,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.CSR
 
-import DMAController.DMAConfig._
 import chisel3._
 import chisel3.util.log2Ceil
 
-class CSRBusBundle extends Bundle {
-  val addr = Output(UInt(log2Ceil(DMATop.controlRegCount).W))
-  val dataOut = Output(UInt(DMATop.controlDataWidth.W))
-  val dataIn = Input(UInt(DMATop.controlDataWidth.W))
+class CSRBusBundle(controlRegCount: Int, controlDataWidth: Int) extends Bundle {
+  val addr = Output(UInt(log2Ceil(controlRegCount).W))
+  val dataOut = Output(UInt(controlDataWidth.W))
+  val dataIn = Input(UInt(controlDataWidth.W))
   val write = Output(Bool())
   val read = Output(Bool())
 }

@@ -19,8 +19,10 @@ import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
 import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
+import DMAController.DMAConfig._
 
-class WishboneClassicPipelinedReader(val addrWidth : Int, val dataWidth : Int) extends IOBus[WishboneMaster]{
+class WishboneClassicPipelinedReader(val addrWidth: Int, val dataWidth: Int,
+    config: DMAConfig) extends IOBus[WishboneMaster](config) {
   val io = IO(new Bundle{
     val bus = new WishboneMaster(addrWidth, dataWidth)
     val dataIO = EnqIO(UInt(dataWidth.W))

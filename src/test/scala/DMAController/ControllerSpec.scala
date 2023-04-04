@@ -16,21 +16,21 @@ package DMAController
 
 import chiseltest.ChiselScalatestTester
 import org.scalatest.flatspec.AnyFlatSpec
+import DMAController.DMAConfig._
 
 class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester{
   behavior of "ControllerSpec"
-  val dma_config = System.getenv("DMACONFIG")
-  dma_config match {
-    case "AXI_AXIL_AXI" =>
-      it should "perform 2D MM2MM transfer with stride mem to mem" in {
-        test(new DMATop).runPeekPoke(dut => new ImageTransfer(dut, new DMAFullMem(dut)))
-      }
+  val dmaConfigMM2MM = new DMAConfig("AXI_AXIL_AXI")
+  it should "perform 2D MM2MM transfer with stride mem to mem" in {
+    test(new DMATop(dmaConfigMM2MM)).runPeekPoke(dut =>
+      new ImageTransfer(dut, new DMAFullMem(dut), dmaConfigMM2MM)
+    )
+  }
 
-    case "AXIS_AXIL_AXI" =>
-      it should "perform 2D S2MM transfer with stride stream to mem" in {
-        test(new DMATop).runPeekPoke(dut => new ImageTransfer(dut, new DMAFullStream(dut)))
-      }
-
-    case _ => ()
+  val dmaConfigS2MM = new DMAConfig("AXIS_AXIL_AXI")
+  it should "perform 2D S2MM transfer with stride stream to mem" in {
+    test(new DMATop(dmaConfigS2MM)).runPeekPoke(dut =>
+      new ImageTransfer(dut, new DMAFullStream(dut), dmaConfigS2MM)
+    )
   }
 }

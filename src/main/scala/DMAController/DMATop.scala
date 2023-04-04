@@ -17,15 +17,15 @@ package DMAController
 import chisel3._
 import chisel3.util._
 import DMAController.Bus._
-import DMAController.CSR.CSR
+import DMAController.CSR._
 import DMAController.Frontend._
 import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
 import DMAController.DMAConfig._
 import DMAUtils._
 
-class DMATop extends DMAModule{
-  val (reader, ccsr, writer) = DMAIOConfig.getConfig()
-  val Bus = new Bus()
+class DMATop(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
+  val (reader, ccsr, writer) = dmaConfig.getBusConfig()
+  val Bus = new Bus(dmaConfig)
 
   val io = IO(new Bundle{
     val control = Bus.getControlBus(ccsr)
@@ -41,12 +41,11 @@ class DMATop extends DMAModule{
 
   val writerFrontend = Module(Bus.getWriter(writer))
 
-  val csr = Module(new CSR(DMATop.addrWidth))
+  val csr = Module(new CSR(dmaConfig))
 
-  val ctl = Module(new WorkerCSRWrapper(DMATop.addrWidth, DMATop.readDataWidth, DMATop.writeDataWidth,
-    DMATop.readMaxBurst, DMATop.writeMaxBurst, DMATop.reader4KBarrier, DMATop.writer4KBarrier))
+  val ctl = Module(new WorkerCSRWrapper(dmaConfig))
 
-  val queue = Queue(readerFrontend.io.dataIO, DMATop.fifoDepth)
+  val queue = Queue(readerFrontend.io.dataIO, dmaConfig.fifoDepth)
   queue <> writerFrontend.io.dataIO
 
   csrFrontend.io.ctl <> io.control
@@ -61,5 +60,4 @@ class DMATop extends DMAModule{
   io.irq <> ctl.io.irq
   io.sync <> ctl.io.sync
 
-  assert(DMATop.readDataWidth == DMATop.writeDataWidth)
 }

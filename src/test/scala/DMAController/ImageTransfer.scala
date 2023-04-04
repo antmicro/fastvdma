@@ -19,8 +19,9 @@ import DMAController.Bfm.ChiselBfm
 import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chiseltest.iotesters.PeekPokeTester
 import chisel3.Bits
+import DMAController.DMAConfig._
 
-class ImageTransfer(dut: DMATop, dmaFull: DMAFull) extends PeekPokeTester(dut){
+class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends PeekPokeTester(dut){
   val width = 256
   val height = 256
   val min = 0
@@ -85,5 +86,5 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull) extends PeekPokeTester(dut){
   expect(dut.io.irq.writerDone, 1)
   expect(dut.io.irq.readerDone, 1)
 
-  writer.saveToFile("./out.rgba")
+  writer.saveToFile(f"./out${dmaConfig.busConfig}.rgba")
 }

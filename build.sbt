@@ -47,9 +47,10 @@ val defaultVersions = Map(
   "chiseltest" -> "0.5.0",
   "chisel-iotesters" -> "2.5.5+"
   )
-
 libraryDependencies ++= Seq("chisel3","chiseltest","chisel-iotesters").map {
   dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
+
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.8.+"
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
 

@@ -16,13 +16,13 @@ package DMAController.Frontend
 import DMAController.Bus._
 import DMAController.CSR.{CSR, CSRBusBundle}
 import DMAController.Worker.{WorkerCSRWrapper, XferDescBundle}
-import DMAController.DMAConfig.DMATop
-import DMAController.DMAConfig.DMAIOConfig._
 import DMAUtils.DMAModule
 import chisel3._
 import chisel3.util._
+import DMAController.DMADriver
+import DMAController.DMAConfig._
 
-abstract class IOBus[+T] extends DMAModule {
+abstract class IOBus[+T](config: DMAConfig) extends DMAModule(config) {
   val io : Bundle {
     val bus : T
     val dataIO : DecoupledIO[UInt]
@@ -30,47 +30,49 @@ abstract class IOBus[+T] extends DMAModule {
   }
 }
 
-abstract class CSRBus [+T] extends DMAModule {
+abstract class CSRBus[+T] (config: DMAConfig) extends DMAModule(config) {
   val io : Bundle {
     val bus : CSRBusBundle
     val ctl : T
   }
 }
 
-class Bus {
+class Bus(config: DMAConfig) {
+  import DMAConfig.{AXI, AXIL, AXIS, WB, PWB}
+
   def getCSR(busType: Int) = busType match {
-    case AXIL => new AXI4LiteCSR(DMATop.addrWidth)
-    case WB => new WishboneCSR(DMATop.addrWidth)
+    case AXIL => new AXI4LiteCSR(config.addrWidth, config.controlDataWidth, config.controlRegCount, config)
+    case WB => new WishboneCSR(config.addrWidth, config.controlDataWidth, config.controlRegCount, config)
   }
 
   def getReader(busType: Int) = busType match {
-    case AXI => new AXI4Reader(DMATop.addrWidth, DMATop.readDataWidth)
-    case AXIS => new AXIStreamSlave(DMATop.addrWidth, DMATop.readDataWidth)
-    case WB => new WishboneClassicReader(DMATop.addrWidth, DMATop.readDataWidth)
-    case PWB => new WishboneClassicPipelinedReader(DMATop.addrWidth, DMATop.readDataWidth)
+    case AXI => new AXI4Reader(config.addrWidth, config.readDataWidth, config)
+    case AXIS => new AXIStreamSlave(config.addrWidth, config.readDataWidth, config)
+    case WB => new WishboneClassicReader(config.addrWidth, config.readDataWidth, config)
+    case PWB => new WishboneClassicPipelinedReader(config.addrWidth, config.readDataWidth, config)
   }
 
   def getWriter(busType: Int) = busType match {
-    case AXI => new AXI4Writer(DMATop.addrWidth, DMATop.readDataWidth)
-    case AXIS => new AXIStreamMaster(DMATop.addrWidth, DMATop.readDataWidth)
-    case WB => new WishboneClassicWriter(DMATop.addrWidth, DMATop.readDataWidth)
-    case PWB => new WishboneClassicPipelinedWriter(DMATop.addrWidth, DMATop.readDataWidth)
+    case AXI => new AXI4Writer(config.addrWidth, config.readDataWidth, config)
+    case AXIS => new AXIStreamMaster(config.addrWidth, config.readDataWidth, config)
+    case WB => new WishboneClassicWriter(config.addrWidth, config.readDataWidth, config)
+    case PWB => new WishboneClassicPipelinedWriter(config.addrWidth, config.readDataWidth, config)
   }
 
   def getControlBus(busType: Int) = busType match {
-    case AXIL => Flipped(new AXI4Lite(DMATop.controlAddrWidth, DMATop.controlDataWidth))
-    case WB => new WishboneSlave(DMATop.addrWidth, DMATop.controlDataWidth)
+    case AXIL => Flipped(new AXI4Lite(config.controlAddrWidth, config.controlDataWidth))
+    case WB => new WishboneSlave(config.addrWidth, config.controlDataWidth)
   }
 
   def getReaderBus(busType: Int) =  busType match {
-    case AXI => new AXI4(DMATop.addrWidth, DMATop.readDataWidth)
-    case AXIS => Flipped(new AXIStream(DMATop.readDataWidth))
-    case WB | PWB => new WishboneMaster(DMATop.addrWidth, DMATop.readDataWidth)
+    case AXI => new AXI4(config.addrWidth, config.readDataWidth)
+    case AXIS => Flipped(new AXIStream(config.readDataWidth))
+    case WB | PWB => new WishboneMaster(config.addrWidth, config.readDataWidth)
   }
 
   def getWriterBus(busType: Int) =  busType match {
-    case AXI => new AXI4(DMATop.addrWidth, DMATop.readDataWidth)
-    case AXIS => new AXIStream(DMATop.readDataWidth)
-    case WB | PWB => new WishboneMaster(DMATop.addrWidth, DMATop.readDataWidth)
+    case AXI => new AXI4(config.addrWidth, config.readDataWidth)
+    case AXIS => new AXIStream(config.readDataWidth)
+    case WB | PWB => new WishboneMaster(config.addrWidth, config.readDataWidth)
   }
 }

@@ -123,7 +123,8 @@ Customizing FastVDMA
 --------------------
 
 Configuration for the DMA is located in the [DMAConfig](src/main/scala/DMAController/DMAConfig.scala) file.
-Most of the settings are defined in the `DMATop` companion object. To change which buses are used you need to set the `DMACONFIG` environment variable. All possible configurations are listed in the map in `DMAConfig` file. The `DMACONFIG` variable consists of names for reader, control and writer buses.
+Most of the settings, such as address/data widths, are defined in the `DMAParams` object. Please verify if those parameters comply with your configuration.
+To change which buses are used you need to set the `DMACONFIG` environment variable. All possible configurations are listed in the map in `DMAConfig` file. The `DMACONFIG` variable consists of names for reader, control and writer buses.
 For example, to generate a design consisting of AXI Stream reader, AXI4 writer and AXILite control you would need to set `DMACONFIG` to `AXIS_AXIL_AXI`.
 However, if you would like to run already written tests on your specified configuration you will also need to cast buses in `io` field in `DMAFull` accordingly to chosen cofiguration. Example:
 

@@ -17,14 +17,15 @@ package DMAController.Frontend
 import DMAController.Bus.WishboneSlave
 import DMAController.CSR.{CSR, CSRBusBundle}
 import DMAController.Worker.WorkerCSRWrapper
-import DMAController.DMAConfig._
 import chisel3._
 import chisel3.util._
+import DMAController.DMAConfig._
 
-class WishboneCSR(addrWidth : Int) extends CSRBus[WishboneSlave]{
+class WishboneCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
+    dmaConfig: DMAConfig) extends CSRBus[WishboneSlave](dmaConfig) {
   val io = IO(new Bundle {
-    val ctl = new WishboneSlave(addrWidth, DMATop.controlDataWidth)
-    val bus = new CSRBusBundle
+    val ctl = new WishboneSlave(addrWidth, dataWidth)
+    val bus = new CSRBusBundle(regCount, dataWidth)
   })
 
   val sIdle :: sAck :: Nil = Enum(2)

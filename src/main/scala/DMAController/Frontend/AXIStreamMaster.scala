@@ -19,8 +19,10 @@ import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
 import DMAController.CSR.CSR
 import chisel3._
 import chisel3.util._
+import DMAController.DMAConfig._
 
-class AXIStreamMaster(val addrWidth: Int, val dataWidth: Int) extends IOBus[AXIStream]{
+class AXIStreamMaster(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
+    extends IOBus[AXIStream](dmaConfig) {
   val io = IO(new Bundle{
     val bus = new AXIStream(dataWidth)
 

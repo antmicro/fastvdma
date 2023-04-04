@@ -20,21 +20,21 @@ import DMAUtils._
 import chisel3._
 import chisel3.util.Cat
 
-class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth : Int, readerMaxBurst : Int,
-                       writerMaxBurst : Int, reader4KBarrier : Boolean, writer4KBarrier : Boolean) extends DMAModule{
-  val io = IO(new Bundle{
-    val csr: Vec[CSRRegBundle] = Vec(DMATop.controlRegCount, Flipped(new CSRRegBundle()))
+class WorkerCSRWrapper(cfg: DMAConfig) extends DMAModule(cfg) {
+  val io = IO(new Bundle {
+    val csr: Vec[CSRRegBundle] = Vec(cfg.controlRegCount, Flipped(new CSRRegBundle(cfg.controlDataWidth)))
     val irq = new InterruptBundle
     val sync = new SyncBundle
-    val xferRead = new XferDescBundle(addrWidth)
-    val xferWrite = new XferDescBundle(addrWidth)
+    val xferRead = new XferDescBundle(cfg.addrWidth)
+    val xferWrite = new XferDescBundle(cfg.addrWidth)
   })
 
-  val addressGeneratorRead = Module(new AddressGenerator(addrWidth, readerDataWidth))
-  val transferSplitterRead = Module(new TransferSplitter(addrWidth, readerDataWidth, readerMaxBurst, reader4KBarrier))
-
-  val addressGeneratorWrite = Module(new AddressGenerator(addrWidth, writerDataWidth))
-  val transferSplitterWrite = Module(new TransferSplitter(addrWidth, writerDataWidth, writerMaxBurst, writer4KBarrier))
+  val addressGeneratorRead = Module(new AddressGenerator(cfg.addrWidth, cfg.readDataWidth, cfg))
+  val transferSplitterRead = Module(new TransferSplitter(cfg.addrWidth, cfg.readDataWidth,
+                                                         cfg.readMaxBurst, cfg.reader4KBarrier, cfg))
+  val addressGeneratorWrite = Module(new AddressGenerator(cfg.addrWidth, cfg.writeDataWidth, cfg))
+  val transferSplitterWrite = Module(new TransferSplitter(cfg.addrWidth, cfg.writeDataWidth,
+                                                          cfg.writeMaxBurst, cfg.writer4KBarrier, cfg))
 
   val status = RegNext(Cat(addressGeneratorRead.io.ctl.busy, addressGeneratorWrite.io.ctl.busy))
 
@@ -53,15 +53,15 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
   val envTag = System.getenv("TAG")
   val tag = if (envTag.isEmpty()) "v0.0" else envTag
   val version = RegInit(tag.filter(_.isDigit).toInt.U)
-  val (in, csr, out) = DMAIOConfig.getConfig()
-  val config = RegInit((in << 8 | csr << 4 | out).U(addrWidth.W))
+  val (in, csr, out) = cfg.getBusConfig()
+  val encConfig = RegInit((in << 8 | csr << 4 | out).U(cfg.addrWidth.W))
 
-  control := ClearCSR(clear, io.csr(0))
+  control := ClearCSR(clear, io.csr(0), cfg)
 
-  StatusCSR(status, io.csr(1))
+  StatusCSR(status, io.csr(1), cfg)
 
   io.irq <> InterruptController(addressGeneratorRead.io.ctl.busy, addressGeneratorWrite.io.ctl.busy,
-    io.csr(2), io.csr(3))
+    io.csr(2), io.csr(3), cfg)
 
   clear := Cat(readerStart, writerStart) & ~Cat(control(5), control(4))
 
@@ -69,22 +69,22 @@ class WorkerCSRWrapper(addrWidth : Int, readerDataWidth : Int, writerDataWidth :
   writerStart := ((!writerSyncOld && writerSync) || control(2)) && control(0)
 
   addressGeneratorRead.io.ctl.start := readerStart
-  addressGeneratorRead.io.ctl.startAddress := SimpleCSR(io.csr(4))
-  addressGeneratorRead.io.ctl.lineLength := SimpleCSR(io.csr(5))
-  addressGeneratorRead.io.ctl.lineCount := SimpleCSR(io.csr(6))
-  addressGeneratorRead.io.ctl.lineGap := SimpleCSR(io.csr(7))
+  addressGeneratorRead.io.ctl.startAddress := SimpleCSR(io.csr(4), cfg)
+  addressGeneratorRead.io.ctl.lineLength := SimpleCSR(io.csr(5), cfg)
+  addressGeneratorRead.io.ctl.lineCount := SimpleCSR(io.csr(6), cfg)
+  addressGeneratorRead.io.ctl.lineGap := SimpleCSR(io.csr(7), cfg)
 
   addressGeneratorWrite.io.ctl.start := writerStart
-  addressGeneratorWrite.io.ctl.startAddress := SimpleCSR(io.csr(8))
-  addressGeneratorWrite.io.ctl.lineLength := SimpleCSR(io.csr(9))
-  addressGeneratorWrite.io.ctl.lineCount := SimpleCSR(io.csr(10))
-  addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(io.csr(11))
+  addressGeneratorWrite.io.ctl.startAddress := SimpleCSR(io.csr(8), cfg)
+  addressGeneratorWrite.io.ctl.lineLength := SimpleCSR(io.csr(9), cfg)
+  addressGeneratorWrite.io.ctl.lineCount := SimpleCSR(io.csr(10), cfg)
+  addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(io.csr(11), cfg)
 
-  StatusCSR(version, io.csr(12))
-  StatusCSR(config, io.csr(13))
+  StatusCSR(version, io.csr(12), cfg)
+  StatusCSR(encConfig, io.csr(13), cfg)
 
-  for(i <- 14 until DMATop.controlRegCount){
-    SimpleCSR(io.csr(i))
+  for (i <- 14 until cfg.controlRegCount) {
+    SimpleCSR(io.csr(i), cfg)
   }
 
   transferSplitterRead.io.xferIn <> addressGeneratorRead.io.xfer
