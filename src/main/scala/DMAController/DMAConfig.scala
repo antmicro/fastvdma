@@ -80,9 +80,9 @@ object DMAConfig {
 // AXIStream <-> Wishbone Slave <-> Wishbone Master
     "AXIS_WB_WB" -> (AXIS, WB, WB),
 // AXIStream <-> AXI4Lite <-> Pipelined Wishbone Master
-    "AXIS_AXIL_WB" -> (AXIS, AXIL, WB),
+    "AXIS_AXIL_PWB" -> (AXIS, AXIL, PWB),
 // AXIStream <-> Wishbone Slave <-> Pipelined Wishbone Master
-    "AXIS_WB_WB" -> (AXIS, WB, WB),
+    "AXIS_WB_PWB" -> (AXIS, WB, PWB),
 // Wishbone Master <-> AXI4Lite <-> AXI4
     "WB_AXIL_AXI" -> (WB, AXIL, AXI),
 // Wishbone Master <-> Wishbone Slave <-> AXI4
