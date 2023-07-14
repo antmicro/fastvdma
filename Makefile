@@ -34,3 +34,7 @@ clean:
 	$(SBT) clean
 
 .PHONY: verilog test testall
+
+%:
+	sphinx-build -M $@ docs build $(SPHINXOPTS) $(0)
+

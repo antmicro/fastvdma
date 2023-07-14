@@ -1,12 +1,12 @@
 image: $DOCKER_IMAGE
 
-before_script:
-# sudo is necessary for setup-enviroment.sh script
-  - apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends git build-essential sudo
-  - ./.github/scripts/setup-environment.sh
-  - git submodule update --init --recursive
-
 test:
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive 
+  # sudo is necessary for setup-enviroment.sh script
+    - apt --allow-releaseinfo-change update && apt install -y --no-install-recommends git build-essential sudo
+    - ./.github/scripts/setup-environment.sh
+    - git submodule update --init --recursive
   script:
     - make testall
     - mkdir out/
@@ -14,3 +14,31 @@ test:
   artifacts:
     paths:
       - out/
+
+build-docs:
+  stage: build
+  script:
+    - export DEBIAN_FRONTEND=noninteractive 
+    - apt --allow-releaseinfo-change update && apt install -y --no-install-recommends git build-essential sudo
+    - sudo apt install -y --no-install-recommends make python3 python3-pip
+    - pip3 install -r docs/requirements.txt
+    - SPHINXOPTS="-A conf_py_path=$DOCS_DIR/$SOURCEDIR/ -A commit=$CI_BUILD_REF -A branch=$CI_BUILD_REF_NAME" make html
+    - make linkcheck
+    - cp docs/*.png build/html 
+    - tar cf $CI_DOCS_ARCHIVE -C build/html/ .
+  artifacts:
+    paths:
+      - build
+      - $CI_DOCS_ARCHIVE
+
+deploy-docs:
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - build-docs
+  stage: deploy
+  tags: ['docs']
+  script: echo 'Deploying docs'
+  artifacts:
+    paths:
+      - $CI_DOCS_ARCHIVE
