@@ -6,11 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Test
+      - name: Build and test the design
         run: |
-         ./.github/scripts/setup-environment.sh
-         make testall
-
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt --allow-releaseinfo-change update && sudo apt install -y --no-install-recommends apt-transport-https curl gnupg graphicsmagick-imagemagick-compat default-jdk default-jre
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
+          sudo apt update && sudo apt install -y sbt
+          make testall
 
   docs:
     runs-on: ubuntu-latest
@@ -18,13 +22,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup environment
+      - name: Setup documentation environment
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update -qq
           sudo apt install -y make python3 python3-pip
           pip3 install -r docs/requirements.txt
-          
 
       - name: Build the documentation
         run: |
@@ -32,7 +35,7 @@ jobs:
           make linkcheck
           cp docs/*.png build/html
 
-      - name: 'Upload artifact: Sphinx HTML'
+      - name: "Upload artifact: Sphinx HTML"
         uses: actions/upload-artifact@v3
         with:
           name: Documentation-HTML
