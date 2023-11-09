@@ -8,7 +8,7 @@ Current register layout is shown in the table below:
 |--------|----------------------------|
 |`0x00` |[Control register](control-register-0x00) |
 |`0x04` |[Status register](status-register-0x04) |
-|`0x08` |[Interrupt mask regiser](interrupt-mask-register-0x08) |
+|`0x08` |[Interrupt mask register](interrupt-mask-register-0x08) |
 |`0x0c` |[Interrupt status register](interrupt-status-register-0x0c) |
 |`0x10` |[Reader start address](reader-start-address-0x10) |
 |`0x14` |[Reader line length](reader-line-length-0x14) |
@@ -62,8 +62,8 @@ Current register layout is shown in the table below:
 
 |Bit |Name             |Description                                                                     |
 |----|-----------------|--------------------------------------------------------------------------------|
-|0   |Writer interrupt |Reads as `1` if writer interrupt has occured, write `1` to clear that interrupt |
-|1   |Reader interrupt |Reads as `1` if reader interrupt has occured, write `1` to clear that interrupt |
+|0   |Writer interrupt |Reads as `1` if writer interrupt has occurred, write `1` to clear that interrupt |
+|1   |Reader interrupt |Reads as `1` if reader interrupt has occurred, write `1` to clear that interrupt |
 |2-31|-                |Unused                                                                          |
 
 ---
