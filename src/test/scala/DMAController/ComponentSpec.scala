@@ -19,39 +19,76 @@ import DMAController.Worker._
 import org.scalatest.{FlatSpec, Matchers}
 import chisel3._
 import chiseltest._
+import chiseltest.iotesters._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.flatspec.AnyFlatSpec
 import DMAController.DMAConfig._
 
-class ComponentSpec extends AnyFlatSpec with ChiselScalatestTester{
-    val cfg = new DMAConfig("AXI_AXIL_AXI")
+class ComponentSpec extends AnyFlatSpec with ChiselScalatestTester {
+  val cfg = new DMAConfig("AXI_AXIL_AXI")
+  val testAnnotations = Seq(WriteVcdAnnotation)
+
+  def testFastVDMAComponent[T <: Module](
+      dutGen: => T,
+      tester: T => PeekPokeTester[T]
+  ): Unit = {
+    test(dutGen)
+      .withAnnotations(testAnnotations)
+      .runPeekPoke(tester)
+  }
+
   behavior of "ComponentSpec"
 
   it should "generate addresses" in {
-    test(new AddressGenerator(32, 32, cfg)).runPeekPoke(new AddressGeneratorTest(_))
+    testFastVDMAComponent(
+      new AddressGenerator(32, 32, cfg),
+      new AddressGeneratorTest(_)
+    )
   }
   it should "split transfers" in {
-      test(new TransferSplitter(32, 32, 256, false, cfg)).runPeekPoke(new TransferSplitterTest(_))
+    testFastVDMAComponent(
+      new TransferSplitter(32, 32, 256, false, cfg),
+      new TransferSplitterTest(_)
+    )
   }
   it should "perform AXI Stream master transfers" in {
-      test(new AXIStreamMaster(32, 32, cfg)).runPeekPoke(new AXIStreamMasterTest(_))
+    testFastVDMAComponent(
+      new AXIStreamMaster(32, 32, cfg),
+      new AXIStreamMasterTest(_)
+    )
   }
   it should "perform AXI Stream slave transfers" in {
-      test(new AXIStreamSlave(32, 32, cfg)).runPeekPoke(new AXIStreamSlaveTest(_))
+    testFastVDMAComponent(
+      new AXIStreamSlave(32, 32, cfg),
+      new AXIStreamSlaveTest(_)
+    )
   }
   it should "perform AXI4 write transfers" in {
-      test(new AXI4Writer(32, 32, cfg)).runPeekPoke(new AXI4WriterTest(_))
+    testFastVDMAComponent(
+      new AXI4Writer(32, 32, cfg),
+      new AXI4WriterTest(_))
   }
   it should "perform AXI4 read transfers" in {
-      test(new AXI4Reader(32, 32, cfg)).runPeekPoke(new AXI4ReaderTest(_))
+    testFastVDMAComponent(
+      new AXI4Reader(32, 32, cfg),
+      new AXI4ReaderTest(_))
   }
   it should "perform Wishbone write transfers" in {
-      test(new WishboneClassicPipelinedWriter(32, 32, cfg)).runPeekPoke(new WishboneWriterTest(_))
+    testFastVDMAComponent(
+      new WishboneClassicPipelinedWriter(32, 32, cfg),
+      new WishboneWriterTest(_)
+    )
   }
   it should "perform Wishbone read transfers" in {
-      test(new WishboneClassicPipelinedReader(32, 32, cfg)).runPeekPoke(new WishboneReaderTest(_))
+    testFastVDMAComponent(
+      new WishboneClassicPipelinedReader(32, 32, cfg),
+      new WishboneReaderTest(_)
+    )
   }
   it should "trigger interrupts" in {
-      test(new InterruptController(cfg)).runPeekPoke(new InterruptControllerTest(_))
+    testFastVDMAComponent(
+      new InterruptController(cfg),
+      new InterruptControllerTest(_)
+    )
   }
 }
