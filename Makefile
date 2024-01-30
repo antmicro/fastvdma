@@ -1,4 +1,4 @@
-SBT?=sbt
+MILL?=./mill
 DRIVER?=DMAController.DMADriver
 TB=ControllerSpec
 
@@ -11,27 +11,27 @@ export TAG
 
 
 verilog:
-	$(SBT) "runMain $(DRIVER) $(CONFIG_FILE)"
+	$(MILL) vdma.runMain --mainClass $(DRIVER) $(CONFIG_FILE)
 
 testsetup:
 	convert -resize $(SIZE_HALF)x$(SIZE_HALF) $(IMG) img0.rgba
 	convert -resize $(SIZE)x$(SIZE) $(IMG) img1.rgba
 
 testM2M: testsetup 
-	$(SBT) "Test / testOnly -t *$(TB)"
+	$(MILL) "Test / testOnly -t *$(TB)"
 	convert -size $(SIZE)x$(SIZE) -depth 8 outAXI_AXIL_AXI.rgba outM2M.png
 
 testS2M: testsetup
-	$(SBT) "Test / testOnly -t *$(TB)"
+	$(MILL) "Test / testOnly -t *$(TB)"
 	convert -size $(SIZE)x$(SIZE) -depth 8 outAXIS_AXIL_AXI.rgba outS2M.png
 
 test: testS2M testM2M
 
 testall: test
-	$(SBT) "test"
+	$(MILL) "test"
 
 clean:
-	$(SBT) clean
+	$(MILL) clean
 
 .PHONY: verilog test testall
 
