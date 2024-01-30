@@ -14,10 +14,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.CSR
 
-import DMAUtils.DMAModule
-import DMAController.DMADriver
-import chisel3._
 import DMAController.DMAConfig._
+import DMAUtils.DMAModule
+import chisel3._
 
 class StatusCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig){
   val io = IO(new Bundle{

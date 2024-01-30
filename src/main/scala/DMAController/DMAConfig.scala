@@ -15,11 +15,6 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.DMAConfig
 
 import chisel3._
-import DMAController.Bus._
-import DMAController.CSR.CSR
-import DMAController.Frontend._
-import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
-import chisel3.util.Queue
 
 class DMAConfig(
     val busConfig: String = "AXI_AXIL_AXI",
@@ -122,7 +117,7 @@ object DMAConfig {
       configurations.apply(cfg)
     } catch {
       case ex: Exception =>
-        throw new Exception("Unsupported DMA configuration: " + cfg)
+        throw new Exception(s"Unsupported DMA configuration: ${ex.getMessage} \nConfiguration: $cfg")
     }
   }
 

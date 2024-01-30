@@ -14,13 +14,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Frontend
 import DMAController.Bus._
-import DMAController.CSR.{CSR, CSRBusBundle}
-import DMAController.Worker.{WorkerCSRWrapper, XferDescBundle}
+import DMAController.CSR.CSRBusBundle
+import DMAController.DMAConfig._
+import DMAController.Worker.XferDescBundle
 import DMAUtils.DMAModule
 import chisel3._
 import chisel3.util._
-import DMAController.DMADriver
-import DMAController.DMAConfig._
 
 abstract class IOBus[+T](config: DMAConfig) extends DMAModule(config) {
   val io : Bundle {

@@ -14,12 +14,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Worker
 
-import DMAController.CSR.{CSRRegBundle, SetCSR, SimpleCSR}
+import DMAController.CSR.CSRRegBundle
+import DMAController.CSR.SetCSR
+import DMAController.CSR.SimpleCSR
+import DMAController.DMAConfig._
+import DMAUtils.DMAModule
 import chisel3._
 import chisel3.util.Cat
-import DMAUtils.DMAModule
-import DMAController.DMADriver
-import DMAController.DMAConfig._
 
 class InterruptController(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
   val io = IO(new Bundle {

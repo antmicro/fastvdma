@@ -14,14 +14,14 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import chisel3._
-import chisel3.util._
-import DMAController.Bus._
 import DMAController.CSR._
-import DMAController.Frontend._
-import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
 import DMAController.DMAConfig._
+import DMAController.Frontend._
+import DMAController.Worker.InterruptBundle
+import DMAController.Worker.SyncBundle
+import DMAController.Worker.WorkerCSRWrapper
 import DMAUtils._
+import chisel3._
 
 class DMATop(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
   val (reader, ccsr, writer) = dmaConfig.getBusConfig()

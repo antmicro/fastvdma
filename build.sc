@@ -1,15 +1,6 @@
 import mill._
 import mill.scalalib._
-//import mill.scalalib.publish._
 import mill.scalalib.scalafmt._
-
-// support bloop
-//import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-
-// VCS version
-//import $ivy.`de.tobiasroeser.mill.vcs.version::0.4.0`
-
-// Global Scala Version
 
 object ivys {
   val scalaVersion = "2.13.12"
@@ -136,7 +127,6 @@ trait InnerChiselTestModule
     with TestModule.ScalaTest {
   override def ivyDeps = super.ivyDeps() ++ Agg(
     dep("chiseltest").excludeName("chisel", "chisel-plugin", "scalatest"),
-    // ivy"com.github.kammoh:chiseltest:main-SNAPSHOT",
     dep("scalatest"),
     dep("scalacheck")
   )
