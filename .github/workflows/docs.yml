@@ -1,0 +1,45 @@
+name: Documentation
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup documentation environment
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt update -qq
+          sudo apt install -y make python3 python3-pip
+          pip3 install -r docs/requirements.txt
+
+      - name: Build the documentation
+        run: |
+          SPHINXOPTS="-A conf_py_path=$DOCS_DIR/$SOURCEDIR/ -A commit=$CI_BUILD_REF -A branch=$CI_BUILD_REF_NAME" make html
+          make linkcheck
+          cp docs/*.png build/html
+
+      - name: "Upload artifact: Sphinx HTML"
+        uses: actions/upload-artifact@v3
+        with:
+          name: Documentation-HTML
+          path: build/html
+
+      - name: Publish site to GitHub Pages
+        if: github.event_name != 'pull_request'
+        run: |
+          cd build/html
+          touch .nojekyll
+          git init
+          cp ../../.git/config ./.git/config
+          git add .
+          git config --local user.email "BuildTheDocs@GitHubActions"
+          git config --local user.name "GitHub Actions"
+          git commit -a -m "update ${{ github.sha }}"
+          git push -u origin +HEAD:gh-pages
