@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 package DMAController
 
@@ -24,7 +24,8 @@ class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   val dmaConfigMM2MM = new DMAConfig("AXI_AXIL_AXI")
   it should "perform 2D MM2MM transfer with stride mem to mem" in {
     test(new DMATop(dmaConfigMM2MM))
-      .withAnnotations(Seq(WriteVcdAnnotation))
+      // .withAnnotations(Seq(WriteVcdAnnotation))
+      .withAnnotations(Seq(VerilatorBackendAnnotation))
       .runPeekPoke(dut =>
         new ImageTransfer(dut, new DMAFullMem(dut), dmaConfigMM2MM)
       )
@@ -33,7 +34,8 @@ class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   val dmaConfigS2MM = new DMAConfig("AXIS_AXIL_AXI")
   it should "perform 2D S2MM transfer with stride stream to mem" in {
     test(new DMATop(dmaConfigS2MM))
-      .withAnnotations(Seq(WriteVcdAnnotation))
+      // .withAnnotations(Seq(WriteVcdAnnotation))
+      .withAnnotations(Seq(VerilatorBackendAnnotation))
       .runPeekPoke(dut =>
         new ImageTransfer(dut, new DMAFullStream(dut), dmaConfigS2MM)
       )

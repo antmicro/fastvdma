@@ -24,7 +24,8 @@ import DMAController.DMAConfig._
 
 class ComponentSpec extends AnyFlatSpec with ChiselScalatestTester {
   val cfg = new DMAConfig("AXI_AXIL_AXI")
-  val testAnnotations = Seq(WriteVcdAnnotation)
+  // val testAnnotations = Seq(WriteVcdAnnotation)
+  val testAnnotations = Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)
 
   def testFastVDMAComponent[T <: Module](
       dutGen: => T,

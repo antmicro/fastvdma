@@ -8,7 +8,7 @@ object ivys {
   val ivyVersions = Map(
     "org.chipsalliance::chisel" -> "6.0.0",
     "org.chipsalliance:::chisel-plugin" -> "$chisel",
-    "edu.berkeley.cs::chiseltest" -> "6.0-SNAPSHOT",
+    "edu.berkeley.cs::chiseltest" -> "6.0.0",
     "edu.berkeley.cs::firrtl2" -> "$chiseltest",
     "org.scalatest::scalatest" -> "3.2.17",
     "org.scalacheck::scalacheck" -> "1.17.0",
@@ -126,7 +126,7 @@ trait InnerChiselTestModule
     extends CommonScalaModule
     with TestModule.ScalaTest {
   override def ivyDeps = super.ivyDeps() ++ Agg(
-    dep("chiseltest").excludeName("chisel", "chisel-plugin", "scalatest"),
+    dep("chiseltest"),//.excludeName("chisel", "chisel-plugin", "scalatest"),
     dep("scalatest"),
     dep("scalacheck")
   )
