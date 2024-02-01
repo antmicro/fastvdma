@@ -15,11 +15,10 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Frontend
 
 import DMAController.Bus.WishboneMaster
-import DMAController.Worker.{XferDescBundle, WorkerCSRWrapper}
-import DMAController.CSR.CSR
+import DMAController.DMAConfig._
+import DMAController.Worker.XferDescBundle
 import chisel3._
 import chisel3.util._
-import DMAController.DMAConfig._
 
 class WishboneClassicPipelinedReader(val addrWidth: Int, val dataWidth: Int,
     config: DMAConfig) extends IOBus[WishboneMaster](config) {

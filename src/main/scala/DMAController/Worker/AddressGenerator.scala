@@ -14,11 +14,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Worker
 
+import DMAController.DMAConfig._
+import DMAUtils.DMAModule
 import chisel3._
 import chisel3.util._
-import DMAUtils.DMAModule
-import DMAController.DMAConfig._
-import DMAController.DMATop
 
 class AddressGenerator(val addrWidth: Int, val dataWidth: Int,
     dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
