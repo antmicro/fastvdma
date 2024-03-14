@@ -52,7 +52,7 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends
 
   override def step(n: Int): Unit = {
     for(_ <- 0 until n) {
-      stepSingle
+      stepSingle()
     }
   }
 

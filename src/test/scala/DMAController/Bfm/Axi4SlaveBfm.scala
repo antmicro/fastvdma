@@ -101,7 +101,7 @@ extends Axi4Bfm {
           }
         }
       }
-      peekInputs
+      peekInputs()
     }
   }
 
@@ -162,7 +162,7 @@ extends Axi4Bfm {
           }
         }
       }
-      peekInputs
+      peekInputs()
     }
   }
 

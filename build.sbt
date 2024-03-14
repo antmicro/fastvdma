@@ -7,7 +7,7 @@ def scalacOptionsVersion(scalaVersion: String): Seq[String] = {
     //  https://github.com/scala/bug/issues/10047
     CrossVersion.partialVersion(scalaVersion) match {
       case Some((2, scalaMajor: Long)) if scalaMajor < 12 => Seq()
-      case _ => Seq("-Xsource:2.11")
+      case _ => Seq("-Xsource:2.13")
     }
   }
 }
@@ -28,24 +28,24 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
 
 ThisBuild / organization := "Antmicro"
 ThisBuild / version := "0.1.0"
-ThisBuild / scalaVersion := "2.12.13"
+ThisBuild / scalaVersion := "2.13.12"
 name := "FastVDMA"
 
-crossScalaVersions := Seq("2.11.12", "2.12.13")
+val chiselVersion = "6.2.0"
+crossScalaVersions := Seq("2.11.12", "2.13.12")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("releases")
 )
-// Chisel 3.5
-addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.3" cross CrossVersion.full)
 
 // Library name, Organization, Version
 val defaultVersions = Map(
-  "chisel3" -> "edu.berkeley.cs" -> "3.5.+",
-  "chiseltest" -> "edu.berkeley.cs" -> "0.5.0",
+  "chisel" -> "org.chipsalliance" -> chiselVersion,
+  "chiseltest" -> "edu.berkeley.cs" -> "6.0-SNAPSHOT",
   "chisel-iotesters" -> "edu.berkeley.cs" -> "2.5.5+",
-  "play-json" -> "com.typesafe.play" -> "2.8.+"
+  "play-json" -> "com.typesafe.play" -> "2.8.+",
+  "scalatest" -> "org.scalatest" -> "3.2.16"
 )
 
 // Provide a managed dependency on X if -DXVersion="" is supplied on the command line.
@@ -55,5 +55,14 @@ libraryDependencies ++= defaultVersions.map {
   }
 }.toSeq
 
-scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
+// Compiler plugin (necessary from chisel 5.0)
+addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full)
+
+scalacOptions ++= scalacOptionsVersion(scalaVersion.value) ++ Seq(
+  "-language:reflectiveCalls",
+  "-deprecation",
+  "-feature",
+  "-Xcheckinit",
+  "-Ymacro-annotations"
+)
 javacOptions ++= javacOptionsVersion(scalaVersion.value)

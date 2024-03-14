@@ -117,7 +117,7 @@ object DMAQueue {
         q.io.enq.valid := enq.valid
         q.io.enq.bits := enq.bits
         enq.ready := q.io.enq.ready
-        TransitName(q.io.deq, q)
+        q.io.deq
       }
     }
 }

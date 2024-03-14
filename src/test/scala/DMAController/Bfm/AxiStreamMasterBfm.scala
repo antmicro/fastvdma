@@ -79,15 +79,15 @@ extends AxiStreamBfm {
         if(txList.nonEmpty) {
           poke(axi.tvalid, 1)
           state = State.WriteData
-          putData
-          updateTlast
+          putData()
+          updateTlast()
         }
       }
       case State.WriteData => {
         if(tready != 0) {
           if(txList.nonEmpty) {
-            putData
-            updateTlast
+            putData()
+            updateTlast()
             if(wordCnt == packetLen) {
               wordCnt = 0
             } else {
@@ -100,6 +100,6 @@ extends AxiStreamBfm {
         }
       }
     }
-    peekInputs
+    peekInputs()
   }
 }

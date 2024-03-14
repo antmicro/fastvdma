@@ -16,7 +16,6 @@ package DMAController
 
 import DMAController.Frontend._
 import DMAController.Worker._
-import org.scalatest.{FlatSpec, Matchers}
 import chisel3._
 import chiseltest._
 import chiseltest.iotesters._

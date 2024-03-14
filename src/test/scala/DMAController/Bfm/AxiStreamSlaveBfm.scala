@@ -58,7 +58,7 @@ extends AxiStreamBfm {
         }
       }
     }
-    peekInputs
+    peekInputs()
   }
 
   def loadFromFile(filename: String): Unit = {

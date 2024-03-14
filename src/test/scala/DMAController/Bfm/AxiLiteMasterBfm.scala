@@ -118,7 +118,7 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
         }
       }
 
-      peekInputs
+      peekInputs()
     }
   }
 
@@ -193,7 +193,7 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
         }
       }
 
-      peekInputs
+      peekInputs()
     }
   }
 
