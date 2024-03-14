@@ -26,11 +26,10 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
   }
 }
 
-name := "chisel-dma"
-
-version := "3.5.3"
-
-scalaVersion := "2.12.13"
+ThisBuild / organization := "Antmicro"
+ThisBuild / version := "0.1.0"
+ThisBuild / scalaVersion := "2.12.13"
+name := "FastVDMA"
 
 crossScalaVersions := Seq("2.11.12", "2.12.13")
 
