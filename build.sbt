@@ -40,17 +40,20 @@ resolvers ++= Seq(
 // Chisel 3.5
 addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.3" cross CrossVersion.full)
 
-// Provide a managed dependency on X if -DXVersion="" is supplied on the command line.
+// Library name, Organization, Version
 val defaultVersions = Map(
-  "chisel3" -> "3.5.+",
-  "chiseltest" -> "0.5.0",
-  "chisel-iotesters" -> "2.5.5+"
-  )
-libraryDependencies ++= Seq("chisel3","chiseltest","chisel-iotesters").map {
-  dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
+  "chisel3" -> "edu.berkeley.cs" -> "3.5.+",
+  "chiseltest" -> "edu.berkeley.cs" -> "0.5.0",
+  "chisel-iotesters" -> "edu.berkeley.cs" -> "2.5.5+",
+  "play-json" -> "com.typesafe.play" -> "2.8.+"
+)
 
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.8.+"
+// Provide a managed dependency on X if -DXVersion="" is supplied on the command line.
+libraryDependencies ++= defaultVersions.map {
+  case ((dep: String, org: String), v: String) => {
+    org %% dep % sys.props.getOrElse(dep + "Version", v)
+  }
+}.toSeq
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
-
 javacOptions ++= javacOptionsVersion(scalaVersion.value)
