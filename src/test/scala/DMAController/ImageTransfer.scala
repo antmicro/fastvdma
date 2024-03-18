@@ -59,21 +59,21 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends
   reader.loadFromFile("./img0.rgba")
   writer.loadFromFile("./img1.rgba")
 
-  control.writePush(DMAConfig.Register.ReaderStartAddr, 0)
-  control.writePush(DMAConfig.Register.ReaderLineLen, width)
-  control.writePush(DMAConfig.Register.ReaderLineCnt, height)
-  control.writePush(DMAConfig.Register.ReaderStride, 0)
+  control.writePush(Register.ReaderStartAddr, 0)
+  control.writePush(Register.ReaderLineLen, width)
+  control.writePush(Register.ReaderLineCnt, height)
+  control.writePush(Register.ReaderStride, 0)
 
-  control.writePush(DMAConfig.Register.WriterStartAddr, height * width * 4 + width * 2)
-  control.writePush(DMAConfig.Register.WriterLineLen, width)
-  control.writePush(DMAConfig.Register.WriterLineCnt, height)
-  control.writePush(DMAConfig.Register.WriterStride, width)
+  control.writePush(Register.WriterStartAddr, height * width * 4 + width * 2)
+  control.writePush(Register.WriterLineLen, width)
+  control.writePush(Register.WriterLineCnt, height)
+  control.writePush(Register.WriterStride, width)
 
   step(100)
 
-  control.writePush(DMAConfig.Register.InterruptMask, 3)
+  control.writePush(Register.InterruptMask, 3)
 
-  control.writePush(DMAConfig.Register.Ctrl, 0xf)
+  control.writePush(Register.Ctrl, 0xf)
 
   waitRange(dut.io.irq.writerDone, 1, min, max)
 
