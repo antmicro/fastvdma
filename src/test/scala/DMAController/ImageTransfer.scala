@@ -14,7 +14,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import scala.reflect.runtime.universe._
 import DMAController.Bfm.ChiselBfm
 import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chiseltest.iotesters.PeekPokeTester
@@ -40,15 +39,14 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends
     assert(cnt >= min)
   }
 
-  val cls = runtimeMirror(getClass.getClassLoader).reflect(this)
-  val members = cls.symbol.typeSignature.members
-
-  def bfms = members.filter(_.typeSignature <:< typeOf[ChiselBfm])
+  val reader = dmaFull.reader
+  val writer = dmaFull.writer
+  val control = dmaFull.control
 
   def stepSingle(): Unit = {
-    for(bfm <- bfms){
-      cls.reflectField(bfm.asTerm).get.asInstanceOf[ChiselBfm].update(cnt)
-    }
+    reader.update(cnt)
+    writer.update(cnt)
+    control.update(cnt)
     super.step(1)
   }
 
@@ -57,10 +55,6 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends
       stepSingle
     }
   }
-
-  val reader = dmaFull.reader
-  val writer = dmaFull.writer
-  val control = dmaFull.control
 
   reader.loadFromFile("./img0.rgba")
   writer.loadFromFile("./img1.rgba")
