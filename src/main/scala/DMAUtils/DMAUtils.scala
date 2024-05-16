@@ -3,7 +3,7 @@ package DMAUtils
 import chisel3._
 import chisel3.util._
 import play.api.libs.json._
-import java.io.{FileNotFoundException, IOException}
+import java.io.FileNotFoundException
 import DMAController.DMAConfig._
 
 abstract class DMAModule(config: DMAConfig) extends Module {
@@ -117,7 +117,7 @@ object DMAQueue {
         q.io.enq.valid := enq.valid
         q.io.enq.bits := enq.bits
         enq.ready := q.io.enq.ready
-        TransitName(q.io.deq, q)
+        q.io.deq
       }
     }
 }

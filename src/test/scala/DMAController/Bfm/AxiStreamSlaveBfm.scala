@@ -14,10 +14,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Bfm
 
-import DMAController.Bus._
-import chisel3.Bits
-
 import scala.collection.mutable.ListBuffer
+
+import chisel3.Bits
+import DMAController.Bus._
 
 class AxiStreamSlaveBfm(val axi: AXIStream,
                         val peek: Bits => BigInt,
@@ -25,7 +25,7 @@ class AxiStreamSlaveBfm(val axi: AXIStream,
                         val println: String => Unit)
 extends AxiStreamBfm {
 
-  private var rxList: ListBuffer[BigInt] = new ListBuffer()
+  private val rxList: ListBuffer[BigInt] = new ListBuffer()
 
   private object State extends Enumeration {
     type State = Value
@@ -58,7 +58,7 @@ extends AxiStreamBfm {
         }
       }
     }
-    peekInputs
+    peekInputs()
   }
 
   def loadFromFile(filename: String): Unit = {

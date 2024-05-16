@@ -13,9 +13,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package DMAController.CSR
-import DMAController.DMADriver
-import DMAUtils.DMAModule
+
 import chisel3._
+import DMAUtils.DMAModule
 import DMAController.DMAConfig.DMAConfig
 
 class ClearCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {

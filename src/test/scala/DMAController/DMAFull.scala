@@ -14,9 +14,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import DMAController.Bfm.{ControlBfm, IOBfm}
-import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chiseltest.iotesters.PeekPokeTester
+import DMAController.Bfm.{ControlBfm, IOBfm}
 
 abstract class DMAFull(dut: DMATop) extends PeekPokeTester(dut){
   val control: ControlBfm

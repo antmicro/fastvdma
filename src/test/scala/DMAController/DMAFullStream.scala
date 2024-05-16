@@ -14,20 +14,21 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import DMAController.Bfm.{AxiLiteMasterBfm, AxiStreamMasterBfm, Axi4MemoryBfm}
+import chisel3.{Bits, Bundle}
 import DMAController.Bus.{AXI4Lite, AXIStream, AXI4}
 import DMAController.Worker.{InterruptBundle, SyncBundle}
-import chisel3.{Bits, Bundle}
+import DMAController.Bfm.{AxiLiteMasterBfm, AxiStreamMasterBfm, Axi4MemoryBfm}
 
 class DMAFullStream(dut: DMATop) extends DMAFull(dut) {
   val width = 256
   val height = 256
   val io = dut.io.asInstanceOf[Bundle{
-                                val control: AXI4Lite
-                                val read: AXIStream
-                                val write: AXI4
-                                val irq: InterruptBundle
-                                val sync: SyncBundle}]
+    val control: AXI4Lite
+    val read: AXIStream
+    val write: AXI4
+    val irq: InterruptBundle
+    val sync: SyncBundle
+  }]
 
   val control = new AxiLiteMasterBfm(io.control, peek[Bits], poke[Bits], println)
   val reader = new AxiStreamMasterBfm(io.read, width * height, peek[Bits], poke[Bits], println)

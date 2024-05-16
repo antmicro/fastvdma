@@ -16,7 +16,6 @@ package DMAController.CSR
 
 import chisel3._
 import DMAUtils.DMAModule
-import DMAController.DMADriver
 import DMAController.DMAConfig._
 
 class SetCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {

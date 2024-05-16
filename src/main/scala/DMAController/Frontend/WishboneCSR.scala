@@ -14,12 +14,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Frontend
 
-import DMAController.Bus.WishboneSlave
-import DMAController.CSR.{CSR, CSRBusBundle}
-import DMAController.Worker.WorkerCSRWrapper
 import chisel3._
 import chisel3.util._
-import DMAController.DMAConfig._
+import DMAController.CSR.CSRBusBundle
+import DMAController.Bus.WishboneSlave
+import DMAController.DMAConfig.DMAConfig
 
 class WishboneCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
     dmaConfig: DMAConfig) extends CSRBus[WishboneSlave](dmaConfig) {
