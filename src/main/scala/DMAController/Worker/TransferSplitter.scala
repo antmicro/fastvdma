@@ -17,8 +17,7 @@ package DMAController.Worker
 import chisel3._
 import chisel3.util._
 import DMAUtils.DMAModule
-import DMAController.DMAConfig._
-import DMAController.DMADriver
+import DMAController.DMAConfig.DMAConfig
 
 class TransferSplitter(val addressWidth: Int, val dataWidth: Int,
     val maxLength: Int, val canCrossBarrier: Boolean, dmaConfig: DMAConfig

@@ -15,7 +15,7 @@ SPDX-License-Identifier: Apache-2.0
 package DMAController.Bus
 
 import chisel3._
-import chisel3.util._
+import chisel3.util.log2Ceil
 
 class WishboneMaster(val addrWidth : Int, val dataWidth : Int) extends Bundle{
   /* data */

@@ -14,10 +14,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController
 
-import DMAController.Bfm.ChiselBfm
-import DMAController.Worker.{InterruptBundle, SyncBundle}
+import chisel3._
 import chiseltest.iotesters.PeekPokeTester
-import chisel3.Bits
 import DMAController.DMAConfig._
 
 class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends PeekPokeTester(dut){
@@ -27,10 +25,10 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends
   val max = width * height * 2
   var cnt: Int = 0
 
-  def waitRange(data: Bits, exp: Int, min: Int, max: Int) : Unit = {
+  def waitRange(data: Bits, exp: Int, min: Int, max: Int): Unit = {
     var cnt = 0
 
-    while(peek(data) != exp && cnt < max){
+    while (peek(data) != exp && cnt < max) {
       step(1)
       cnt += 1
     }
@@ -51,8 +49,8 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends
   }
 
   override def step(n: Int): Unit = {
-    for(_ <- 0 until n) {
-      stepSingle
+    for (_ <- 0 until n) {
+      stepSingle()
     }
   }
 

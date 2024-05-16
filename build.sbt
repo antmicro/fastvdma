@@ -1,17 +1,5 @@
 // See README.md for license details.
 
-def scalacOptionsVersion(scalaVersion: String): Seq[String] = {
-  Seq() ++ {
-    // If we're building with Scala > 2.11, enable the compile option
-    //  switch to support our anonymous Bundle definitions:
-    //  https://github.com/scala/bug/issues/10047
-    CrossVersion.partialVersion(scalaVersion) match {
-      case Some((2, scalaMajor: Long)) if scalaMajor < 12 => Seq()
-      case _ => Seq("-Xsource:2.11")
-    }
-  }
-}
-
 def javacOptionsVersion(scalaVersion: String): Seq[String] = {
   Seq() ++ {
     // Scala 2.12 requires Java 8. We continue to generate
@@ -28,30 +16,34 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
 
 name := "chisel-dma"
 
-version := "3.5.3"
+version := "6.0.0"
 
-scalaVersion := "2.12.13"
-
-crossScalaVersions := Seq("2.11.12", "2.12.13")
+scalaVersion := "2.13.12"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("releases")
 )
-// Chisel 3.5
-addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.3" cross CrossVersion.full)
+resolvers -= DefaultMavenRepository
+resolvers += "Maven Repo" at "https://mvnrepository.com/artifacts"
+
+// Chisel 6.0.0
+addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % "6.0.0" cross CrossVersion.full)
 
 // Provide a managed dependency on X if -DXVersion="" is supplied on the command line.
 val defaultVersions = Map(
-  "chisel3" -> "3.5.+",
-  "chiseltest" -> "0.5.0",
-  "chisel-iotesters" -> "2.5.5+"
-  )
-libraryDependencies ++= Seq("chisel3","chiseltest","chisel-iotesters").map {
-  dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
+  "chisel" -> "6.0.0",
+  "chiseltest" -> "6.0-SNAPSHOT"
+)
 
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.8.+"
+val defaultOrgs = Map(
+  "chisel" -> "org.chipsalliance",
+  "chiseltest" -> "edu.berkeley.cs"
+)
 
-scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
+libraryDependencies ++= Seq("chisel","chiseltest").map {
+  dep: String => defaultOrgs(dep) %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) }
+
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.10.5"
 
 javacOptions ++= javacOptionsVersion(scalaVersion.value)

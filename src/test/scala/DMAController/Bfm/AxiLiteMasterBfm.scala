@@ -24,10 +24,10 @@ SOFTWARE.
 */
 package DMAController.Bfm
 
-import DMAController.Bus._
-import chisel3.Bits
-
 import scala.collection.mutable.ListBuffer
+
+import chisel3.Bits
+import DMAController.Bus._
 
 /**
   * Bus functional model for AXI Lite master
@@ -118,7 +118,7 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
         }
       }
 
-      peekInputs
+      peekInputs()
     }
   }
 
@@ -193,7 +193,7 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
         }
       }
 
-      peekInputs
+      peekInputs()
     }
   }
 
@@ -201,8 +201,9 @@ class AxiLiteMasterBfm(val axi: AXI4Lite,
   // queues
   class Cmd(val is_read: Boolean, val addr: BigInt, val wr_data: BigInt)
   class Resp(val success: Boolean, val rd_data: BigInt)
-  private var cmdList: ListBuffer[Cmd] = new ListBuffer()
-  private var respList: ListBuffer[Resp] = new ListBuffer()
+
+  private val cmdList: ListBuffer[Cmd] = new ListBuffer()
+  private val respList: ListBuffer[Resp] = new ListBuffer()
 
   // interfaces
   private val read_if = new ReadIf()

@@ -340,8 +340,9 @@ hs_err_pid*
 
 # chisel output
 *.v
+*.sv
 *.fir
 *.anno.json
 
 *.rgba
-out.png
+out*.png

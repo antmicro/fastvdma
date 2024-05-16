@@ -14,10 +14,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Bfm
 
-import DMAController.Bus._
-import chisel3.Bits
-
 import java.nio._
+import chisel3.Bits
+import DMAController.Bus._
 
 class Axi4MemoryBfm(val axi: AXI4,
                         val size: Int,
@@ -101,7 +100,7 @@ extends Axi4Bfm {
           }
         }
       }
-      peekInputs
+      peekInputs()
     }
   }
 
@@ -162,7 +161,7 @@ extends Axi4Bfm {
           }
         }
       }
-      peekInputs
+      peekInputs()
     }
   }
 

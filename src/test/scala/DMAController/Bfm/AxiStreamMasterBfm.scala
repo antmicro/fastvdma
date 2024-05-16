@@ -14,12 +14,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package DMAController.Bfm
 
-import DMAController.Bus._
-import chisel3.Bits
-
 import java.nio._
-
 import scala.collection.mutable.ListBuffer
+
+import chisel3.Bits
+import DMAController.Bus._
 
 class AxiStreamMasterBfm(val axi: AXIStream,
                         val packetLen: Int,
@@ -28,7 +27,7 @@ class AxiStreamMasterBfm(val axi: AXIStream,
                         val println: String => Unit) 
 extends AxiStreamBfm {
 
-  private var txList: ListBuffer[Int] = new ListBuffer()
+  private val txList: ListBuffer[Int] = new ListBuffer()
 
   private object State extends Enumeration {
     type State = Value
@@ -45,8 +44,7 @@ extends AxiStreamBfm {
     val path = file.Paths.get(filename)
     val buffer = file.Files.readAllBytes(path)
     val bb = ByteBuffer.wrap(buffer)
-    //bb.order(ByteOrder.nativeOrder)
-    var buf = new Array[Int](buffer.length/4)
+    val buf = new Array[Int](buffer.length / 4)
     bb.asIntBuffer.get(buf)
     for(i <- 0 until buf.length) {
       txList += buf(i)
@@ -79,15 +77,15 @@ extends AxiStreamBfm {
         if(txList.nonEmpty) {
           poke(axi.tvalid, 1)
           state = State.WriteData
-          putData
-          updateTlast
+          putData()
+          updateTlast()
         }
       }
       case State.WriteData => {
         if(tready != 0) {
           if(txList.nonEmpty) {
-            putData
-            updateTlast
+            putData()
+            updateTlast()
             if(wordCnt == packetLen) {
               wordCnt = 0
             } else {
@@ -100,6 +98,6 @@ extends AxiStreamBfm {
         }
       }
     }
-    peekInputs
+    peekInputs()
   }
 }
