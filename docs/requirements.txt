@@ -1,1 +1,2 @@
+Sphinx==7.4.7
 https://github.com/antmicro/antmicro-sphinx-utils/archive/main.zip
