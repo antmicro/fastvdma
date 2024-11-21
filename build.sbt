@@ -21,7 +21,7 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
       case Some((2, scalaMajor: Long)) if scalaMajor < 12 =>
         Seq("-source", "1.7", "-target", "1.7")
       case _ =>
-        Seq("-source", "1.8", "-target", "1.8")
+        Seq("-source", "17", "-target", "17")
     }
   }
 }
