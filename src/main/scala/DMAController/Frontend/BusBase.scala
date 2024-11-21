@@ -22,7 +22,7 @@ import chisel3.util._
 import DMAController.DMADriver
 import DMAController.DMAConfig._
 
-abstract class IOBus[+T](config: DMAConfig) extends DMAModule(config) {
+abstract class IOBus[T <: Bundle](config: DMAConfig) extends DMAModule(config) {
   val io : Bundle {
     val bus : T
     val dataIO : DecoupledIO[UInt]
@@ -30,7 +30,7 @@ abstract class IOBus[+T](config: DMAConfig) extends DMAModule(config) {
   }
 }
 
-abstract class CSRBus[+T] (config: DMAConfig) extends DMAModule(config) {
+abstract class CSRBus[T <: Bundle] (config: DMAConfig) extends DMAModule(config) {
   val io : Bundle {
     val bus : CSRBusBundle
     val ctl : T
