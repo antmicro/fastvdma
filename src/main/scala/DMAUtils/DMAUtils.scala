@@ -6,9 +6,9 @@ import play.api.libs.json._
 import java.io.{FileNotFoundException, IOException}
 import DMAController.DMAConfig._
 
-abstract class DMAModule(config: DMAConfig) extends Module {
+abstract class DMAModule(implicit dmaConfig: DMAConfig) extends Module {
   lazy val class_name = this.getClass.getSimpleName()
-  override val desiredName = s"$class_name${config.busConfig}"
+  override val desiredName = s"$class_name${dmaConfig.busConfig}"
 }
 
 object DMAParseInput {
@@ -94,7 +94,7 @@ object DMALogger {
     if (isErrorEnabled()) println(s"${colorToAnsi(Red)}[ERROR] ${msg}${escape}")
 }
 
-class DMAQueue[T <: Data](gen: T, dmaConfig: DMAConfig)
+class DMAQueue[T <: Data](gen: T)(implicit dmaConfig: DMAConfig)
     extends Queue(gen, dmaConfig.fifoDepth) {
       override val desiredName = s"DMAQueue${dmaConfig.busConfig}"
 }
@@ -102,9 +102,8 @@ class DMAQueue[T <: Data](gen: T, dmaConfig: DMAConfig)
 object DMAQueue {
     def apply[T <: Data](
         enq: ReadyValidIO[T],
-        dmaConfig: DMAConfig,
         flush: Option[Bool] = None
-    ): DecoupledIO[T] = {
+    )(implicit dmaConfig: DMAConfig): DecoupledIO[T] = {
       if (dmaConfig.fifoDepth == 0) {
         val deq = Wire(new DecoupledIO(chiselTypeOf(enq.bits)))
         deq.valid := enq.valid
@@ -112,7 +111,7 @@ object DMAQueue {
         enq.ready := deq.ready
         deq
       } else {
-        val q = Module(new DMAQueue(chiselTypeOf(enq.bits), dmaConfig))
+        val q = Module(new DMAQueue(chiselTypeOf(enq.bits)))
         q.io.flush.zip(flush).foreach(f => f._1 := f._2)
         q.io.enq.valid := enq.valid
         q.io.enq.bits := enq.bits

@@ -21,8 +21,8 @@ import chisel3._
 import chisel3.util._
 import DMAController.DMAConfig._
 
-class AXI4Writer(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
-    extends IOBus[AXI4](dmaConfig) {
+class AXI4Writer(val addrWidth: Int, val dataWidth: Int)(implicit dmaConfig: DMAConfig)
+    extends IOBus[AXI4] {
   val io = IO(new Bundle {
     val bus = new AXI4(addrWidth, dataWidth)
 

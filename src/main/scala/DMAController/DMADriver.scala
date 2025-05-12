@@ -36,5 +36,6 @@ object DMADriver extends App {
       }
     }
 
-  ChiselStage.emitSystemVerilogFile(new DMATop(config))
+  implicit val dmaConfig: DMAConfig = config
+  ChiselStage.emitSystemVerilogFile(new DMATop)
 }

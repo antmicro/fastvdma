@@ -21,7 +21,7 @@ import DMAUtils.DMAModule
 import DMAController.DMADriver
 import DMAController.DMAConfig._
 
-class InterruptController(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
+class InterruptController(implicit dmaConfig: DMAConfig) extends DMAModule {
   val io = IO(new Bundle {
     val irq = new InterruptBundle
     val readBusy = Input(Bool())
@@ -30,7 +30,7 @@ class InterruptController(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
     val isr = Flipped(new CSRRegBundle(dmaConfig.controlDataWidth))
   })
 
-  val mask = WireInit(SimpleCSR(io.imr, dmaConfig))
+  val mask = WireInit(SimpleCSR(io.imr))
 
   val readBusy = RegNext(io.readBusy)
   val readBusyOld = RegNext(readBusy)
@@ -46,16 +46,20 @@ class InterruptController(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
 
   val irq = WireInit(Cat(readBusyIrq, writeBusyIrq))
 
-  val isr = WireInit(SetCSR(irq, io.isr, dmaConfig))
+  val isr = WireInit(SetCSR(irq, io.isr))
 
   io.irq.writerDone := isr(0)
   io.irq.readerDone := isr(1)
 }
 
 object InterruptController {
-  def apply(readBusy: Bool, writeBusy: Bool, imr: CSRRegBundle, isr: CSRRegBundle,
-            dmaConfig: DMAConfig): InterruptBundle = {
-    val irqc = Module(new InterruptController(dmaConfig))
+  def apply(
+      readBusy: Bool,
+      writeBusy: Bool,
+      imr: CSRRegBundle,
+      isr: CSRRegBundle
+  )(implicit dmaConfig: DMAConfig): InterruptBundle = {
+    val irqc = Module(new InterruptController)
 
     irqc.io.readBusy := readBusy
     irqc.io.writeBusy := writeBusy

@@ -23,29 +23,26 @@ import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
 import DMAController.DMAConfig._
 import DMAUtils._
 
-class DMATop(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
-  val (reader, ccsr, writer) = dmaConfig.getBusConfig()
-  val Bus = new Bus(dmaConfig)
-
+class DMATop(implicit dmaConfig: DMAConfig) extends DMAModule {
   val io = IO(new Bundle {
-    val control = Bus.getControlBus(ccsr)
-    val read = Bus.getReaderBus(reader)
-    val write = Bus.getWriterBus(writer)
+    val control = Bus.getControlBus
+    val read = Bus.getReaderBus
+    val write = Bus.getWriterBus
     val irq = new InterruptBundle
     val sync = new SyncBundle
   })
 
-  val csrFrontend = Module(Bus.getCSR(ccsr))
+  val csrFrontend = Module(Bus.getCSR)
 
-  val readerFrontend = Module(Bus.getReader(reader))
+  val readerFrontend = Module(Bus.getReader)
 
-  val writerFrontend = Module(Bus.getWriter(writer))
+  val writerFrontend = Module(Bus.getWriter)
 
-  val csr = Module(new CSR(dmaConfig))
+  val csr = Module(new CSR)
 
-  val ctl = Module(new WorkerCSRWrapper(dmaConfig))
+  val ctl = Module(new WorkerCSRWrapper)
 
-  val queue = DMAQueue(readerFrontend.io.dataIO, dmaConfig)
+  val queue = DMAQueue(readerFrontend.io.dataIO)
   queue <> writerFrontend.io.dataIO
 
   csrFrontend.io.ctl <> io.control

@@ -19,7 +19,7 @@ import DMAUtils.DMAModule
 import DMAController.DMADriver
 import DMAController.DMAConfig._
 
-class SetCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
+class SetCSR(implicit dmaConfig: DMAConfig) extends DMAModule {
   val io = IO(new Bundle {
     val csr = Flipped(new CSRRegBundle(dmaConfig.controlDataWidth))
     val value = Output(UInt(dmaConfig.controlDataWidth.W))
@@ -40,8 +40,8 @@ class SetCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
 }
 
 object SetCSR {
-  def apply(set: UInt, csrCtl: CSRRegBundle, dmaConfig: DMAConfig): UInt = {
-    val csr = Module(new SetCSR(dmaConfig))
+  def apply(set: UInt, csrCtl: CSRRegBundle)(implicit dmaConfig: DMAConfig): UInt = {
+    val csr = Module(new SetCSR)
 
     csr.io.set := set
 

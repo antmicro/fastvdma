@@ -21,8 +21,8 @@ import chisel3._
 import chisel3.util._
 import DMAController.DMAConfig._
 
-class WishboneCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
-    dmaConfig: DMAConfig) extends CSRBus[WishboneSlave](dmaConfig) {
+class WishboneCSR(addrWidth: Int, dataWidth: Int, regCount: Int)(implicit dmaConfig: DMAConfig)
+    extends CSRBus[WishboneSlave] {
   val io = IO(new Bundle {
     val ctl = new WishboneSlave(addrWidth, dataWidth)
     val bus = new CSRBusBundle(regCount, dataWidth)

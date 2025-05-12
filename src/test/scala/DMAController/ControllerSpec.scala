@@ -23,19 +23,19 @@ class ControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "ControllerSpec"
   val dmaConfigMM2MM = new DMAConfig("AXI_AXIL_AXI")
   it should "perform 2D MM2MM transfer with stride mem to mem" in {
-    test(new DMATop(dmaConfigMM2MM))
+    test(new DMATop()(dmaConfigMM2MM))
       .withAnnotations(Seq(WriteVcdAnnotation))
       .runPeekPoke(dut =>
-        new ImageTransfer(dut, new DMAFullMem(dut), dmaConfigMM2MM)
+        new ImageTransfer(dut, new DMAFullMem(dut))(dmaConfigMM2MM)
       )
   }
 
   val dmaConfigS2MM = new DMAConfig("AXIS_AXIL_AXI")
   it should "perform 2D S2MM transfer with stride stream to mem" in {
-    test(new DMATop(dmaConfigS2MM))
+    test(new DMATop()(dmaConfigS2MM))
       .withAnnotations(Seq(WriteVcdAnnotation))
       .runPeekPoke(dut =>
-        new ImageTransfer(dut, new DMAFullStream(dut), dmaConfigS2MM)
+        new ImageTransfer(dut, new DMAFullStream(dut))(dmaConfigS2MM)
       )
   }
 }

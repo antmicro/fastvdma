@@ -20,7 +20,7 @@ import chiseltest.iotesters.PeekPokeTester
 import chisel3.Bits
 import DMAController.DMAConfig._
 
-class ImageTransfer(dut: DMATop, dmaFull: DMAFull, dmaConfig: DMAConfig) extends PeekPokeTester(dut){
+class ImageTransfer(dut: DMATop, dmaFull: DMAFull)(implicit val dmaConfig: DMAConfig) extends PeekPokeTester(dut){
   val width = 256
   val height = 256
   val min = 0

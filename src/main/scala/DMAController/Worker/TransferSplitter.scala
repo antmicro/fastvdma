@@ -20,9 +20,13 @@ import DMAUtils.DMAModule
 import DMAController.DMAConfig._
 import DMAController.DMADriver
 
-class TransferSplitter(val addressWidth: Int, val dataWidth: Int,
-    val maxLength: Int, val canCrossBarrier: Boolean, dmaConfig: DMAConfig
-) extends DMAModule(dmaConfig) {
+class TransferSplitter(
+    val addressWidth: Int,
+    val dataWidth: Int,
+    val maxLength: Int,
+    val canCrossBarrier: Boolean
+)(implicit dmaConfig: DMAConfig)
+    extends DMAModule {
   val io = IO(new Bundle {
     val xferIn = Flipped(new XferDescBundle(addressWidth))
     val xferOut = new XferDescBundle(addressWidth)

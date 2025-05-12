@@ -20,9 +20,9 @@ import DMAUtils.DMAModule
 import DMAController.DMAConfig._
 import DMAController.DMATop
 
-class AddressGenerator(val addrWidth: Int, val dataWidth: Int,
-    dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
-  val io = IO(new Bundle{
+class AddressGenerator(val addrWidth: Int, val dataWidth: Int)(implicit dmaConfig: DMAConfig)
+    extends DMAModule {
+  val io = IO(new Bundle {
     val ctl = new AddressGeneratorCtlBundle(addrWidth)
     val xfer = new XferDescBundle(addrWidth)
   })

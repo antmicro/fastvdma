@@ -19,8 +19,8 @@ import DMAController.DMADriver
 import chisel3._
 import DMAController.DMAConfig._
 
-class StatusCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig){
-  val io = IO(new Bundle{
+class StatusCSR(implicit dmaConfig: DMAConfig) extends DMAModule {
+  val io = IO(new Bundle {
     val csr = Flipped(new CSRRegBundle(dmaConfig.controlDataWidth))
     val value = Input(UInt(dmaConfig.controlDataWidth.W))
   })
@@ -30,9 +30,9 @@ class StatusCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig){
   io.csr.dataIn := reg
 }
 
-object StatusCSR{
-  def apply(status : UInt, csrCtl : CSRRegBundle, dmaConfig: DMAConfig): Unit = {
-    val csr = Module(new StatusCSR(dmaConfig))
+object StatusCSR {
+  def apply(status: UInt, csrCtl: CSRRegBundle)(implicit dmaConfig: DMAConfig): Unit = {
+    val csr = Module(new StatusCSR)
 
     csr.io.csr <> csrCtl
 

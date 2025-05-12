@@ -18,7 +18,7 @@ import DMAUtils.DMAModule
 import chisel3._
 import DMAController.DMAConfig.DMAConfig
 
-class ClearCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
+class ClearCSR(implicit dmaConfig: DMAConfig) extends DMAModule {
   val io = IO(new Bundle {
     val csr = Flipped(new CSRRegBundle(dmaConfig.controlDataWidth))
     val value = Output(UInt(dmaConfig.controlDataWidth.W))
@@ -38,8 +38,8 @@ class ClearCSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
 }
 
 object ClearCSR {
-  def apply(clear: UInt, csrCtl: CSRRegBundle, dmaConfig: DMAConfig): UInt = {
-    val csr = Module(new ClearCSR(dmaConfig))
+  def apply(clear: UInt, csrCtl: CSRRegBundle)(implicit dmaConfig: DMAConfig): UInt = {
+    val csr = Module(new ClearCSR)
 
     csr.io.clear := clear
 

@@ -18,7 +18,7 @@ import chisel3._
 import DMAUtils.DMAModule
 import DMAController.DMAConfig._
 
-class CSR(dmaConfig: DMAConfig) extends DMAModule(dmaConfig) {
+class CSR(implicit dmaConfig: DMAConfig) extends DMAModule {
   val io = IO(new Bundle {
     val csr = Vec(dmaConfig.controlRegCount, new CSRRegBundle(dmaConfig.controlDataWidth))
     val bus = Flipped(new CSRBusBundle(dmaConfig.controlRegCount, dmaConfig.controlDataWidth))

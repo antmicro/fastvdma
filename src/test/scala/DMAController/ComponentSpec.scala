@@ -24,7 +24,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import DMAController.DMAConfig._
 
 class ComponentSpec extends AnyFlatSpec with ChiselScalatestTester {
-  val cfg = new DMAConfig("AXI_AXIL_AXI")
+  implicit val dmaConfig: DMAConfig = new DMAConfig("AXI_AXIL_AXI")
   val testAnnotations = Seq(WriteVcdAnnotation)
 
   def testFastVDMAComponent[T <: Module](
@@ -40,53 +40,53 @@ class ComponentSpec extends AnyFlatSpec with ChiselScalatestTester {
 
   it should "generate addresses" in {
     testFastVDMAComponent(
-      new AddressGenerator(32, 32, cfg),
+      new AddressGenerator(32, 32),
       new AddressGeneratorTest(_)
     )
   }
   it should "split transfers" in {
     testFastVDMAComponent(
-      new TransferSplitter(32, 32, 256, false, cfg),
+      new TransferSplitter(32, 32, 256, false),
       new TransferSplitterTest(_)
     )
   }
   it should "perform AXI Stream master transfers" in {
     testFastVDMAComponent(
-      new AXIStreamMaster(32, 32, cfg),
+      new AXIStreamMaster(32, 32),
       new AXIStreamMasterTest(_)
     )
   }
   it should "perform AXI Stream slave transfers" in {
     testFastVDMAComponent(
-      new AXIStreamSlave(32, 32, cfg),
+      new AXIStreamSlave(32, 32),
       new AXIStreamSlaveTest(_)
     )
   }
   it should "perform AXI4 write transfers" in {
     testFastVDMAComponent(
-      new AXI4Writer(32, 32, cfg),
+      new AXI4Writer(32, 32),
       new AXI4WriterTest(_))
   }
   it should "perform AXI4 read transfers" in {
     testFastVDMAComponent(
-      new AXI4Reader(32, 32, cfg),
+      new AXI4Reader(32, 32),
       new AXI4ReaderTest(_))
   }
   it should "perform Wishbone write transfers" in {
     testFastVDMAComponent(
-      new WishboneClassicPipelinedWriter(32, 32, cfg),
+      new WishboneClassicPipelinedWriter(32, 32),
       new WishboneWriterTest(_)
     )
   }
   it should "perform Wishbone read transfers" in {
     testFastVDMAComponent(
-      new WishboneClassicPipelinedReader(32, 32, cfg),
+      new WishboneClassicPipelinedReader(32, 32),
       new WishboneReaderTest(_)
     )
   }
   it should "trigger interrupts" in {
     testFastVDMAComponent(
-      new InterruptController(cfg),
+      new InterruptController,
       new InterruptControllerTest(_)
     )
   }

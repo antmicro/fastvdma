@@ -21,8 +21,8 @@ import chisel3._
 import chisel3.util._
 import DMAController.DMAConfig._
 
-class AXI4LiteCSR(addrWidth: Int, dataWidth: Int, regCount: Int,
-    dmaConfig: DMAConfig) extends CSRBus[AXI4Lite](dmaConfig) {
+class AXI4LiteCSR(addrWidth: Int, dataWidth: Int, regCount: Int)(implicit dmaConfig: DMAConfig)
+    extends CSRBus[AXI4Lite] {
   val io = IO(new Bundle {
     val ctl = Flipped(new AXI4Lite(addrWidth, dataWidth))
     val bus = new CSRBusBundle(regCount, dataWidth)

@@ -19,13 +19,13 @@ import DMAUtils.DMAModule
 import DMAController.DMADriver
 import DMAController.DMAConfig._
 
-class SimpleCSR(config: DMAConfig) extends DMAModule(config) {
+class SimpleCSR(implicit dmaConfig: DMAConfig) extends DMAModule {
   val io = IO(new Bundle {
-    val csr = Flipped(new CSRRegBundle(config.controlDataWidth))
-    val value = Output(UInt(config.controlDataWidth.W))
+    val csr = Flipped(new CSRRegBundle(dmaConfig.controlDataWidth))
+    val value = Output(UInt(dmaConfig.controlDataWidth.W))
   })
 
-  val reg = RegInit(0.U(config.controlDataWidth.W))
+  val reg = RegInit(0.U(dmaConfig.controlDataWidth.W))
 
   io.csr.dataIn := reg
   io.value := reg
@@ -37,8 +37,8 @@ class SimpleCSR(config: DMAConfig) extends DMAModule(config) {
 }
 
 object SimpleCSR {
-  def apply(csrCtl: CSRRegBundle, config: DMAConfig): UInt = {
-    val csr = Module(new SimpleCSR(config))
+  def apply(csrCtl: CSRRegBundle)(implicit dmaConfig: DMAConfig): UInt = {
+    val csr = Module(new SimpleCSR)
 
     csr.io.csr <> csrCtl
 

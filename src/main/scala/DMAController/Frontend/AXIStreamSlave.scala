@@ -21,9 +21,9 @@ import chisel3._
 import chisel3.util._
 import DMAController.DMAConfig._
 
-class AXIStreamSlave(val addrWidth: Int, val dataWidth: Int, dmaConfig: DMAConfig)
-    extends IOBus[AXIStream](dmaConfig) {
-  val io = IO(new Bundle{
+class AXIStreamSlave(val addrWidth: Int, val dataWidth: Int)(implicit dmaConfig: DMAConfig)
+    extends IOBus[AXIStream] {
+  val io = IO(new Bundle {
     val bus = Flipped(new AXIStream(dataWidth))
 
     val dataIO = EnqIO(UInt(dataWidth.W))
