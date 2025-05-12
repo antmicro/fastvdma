@@ -17,7 +17,7 @@ package DMAController.Bus
 import chisel3._
 import chisel3.util._
 
-class WishboneMaster(val addrWidth : Int, val dataWidth : Int) extends Bundle{
+class WishboneMaster(val addrWidth : Int, val dataWidth : Int) extends BusIf {
   /* data */
   val dat_i = Input(UInt(dataWidth.W))
   val dat_o = Output(UInt(dataWidth.W))

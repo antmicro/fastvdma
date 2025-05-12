@@ -175,7 +175,7 @@ object AXI4R{
   }
 }
 
-class AXI4(val addrWidth : Int, val dataWidth : Int) extends Bundle{
+class AXI4(val addrWidth : Int, val dataWidth : Int) extends BusIf {
   val aw = new AXI4AW(addrWidth)
   val w = new AXI4W(dataWidth)
   val b = new AXI4B()

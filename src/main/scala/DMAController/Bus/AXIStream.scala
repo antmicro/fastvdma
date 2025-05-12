@@ -16,7 +16,7 @@ package DMAController.Bus
 
 import chisel3._
 
-class AXIStream(val dataWidth : Int) extends Bundle{
+class AXIStream(val dataWidth : Int) extends BusIf {
   val tdata = Output(UInt(dataWidth.W))
   val tvalid = Output(Bool())
   val tready = Input(Bool())
