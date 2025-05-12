@@ -1,7 +1,7 @@
 Fast Versatile DMA
 ==================
 
-Copyright (c) 2019-2024 [Antmicro](https://www.antmicro.com)
+Copyright (c) 2019-2025 [Antmicro](https://www.antmicro.com)
 
 Overview
 --------
