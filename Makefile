@@ -25,7 +25,15 @@ testS2M: testsetup
 	$(SBT) 'Test / testOnly *$(TB) -- -z "S2MM transfer"'
 	convert -size $(SIZE)x$(SIZE) -depth 8 outAXIS_AXIL_AXI.rgba outS2M.png
 
-test: testS2M testM2M
+testM2M64: testsetup
+	$(SBT) 'Test / testOnly *$(TB) -- -z "MM2MM 64-bit start address transfer"'
+	convert -size $(SIZE)x$(SIZE) -depth 8 outAXI_AXIL_AXI_64.rgba outM2M_64.png
+
+testS2M64: testsetup
+	$(SBT) 'Test / testOnly *$(TB) -- -z "S2MM 64-bit start address transfer"'
+	convert -size $(SIZE)x$(SIZE) -depth 8 outAXIS_AXIL_AXI_64.rgba outS2M_64.png
+
+test: testS2M testM2M testS2M64 testM2M64
 
 testall: test
 	$(SBT) "test"

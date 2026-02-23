@@ -59,12 +59,21 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull)(implicit val dmaConfig: DMACo
   reader.loadFromFile("./img0.rgba")
   writer.loadFromFile("./img1.rgba")
 
-  control.writePush(Register.ReaderStartAddr, 0)
+  val readerBaseLsb = (dmaFull.readerBase & 0xFFFFFFFFL).toInt
+  val readerBaseMsb = (dmaFull.readerBase >> 32).toInt
+
+  val writerBase = dmaFull.writerBase + height * width * 4 + width * 2
+  val writerBaseLsb = (writerBase & 0xFFFFFFFFL).toInt
+  val writerBaseMsb = (writerBase >> 32).toInt
+
+  control.writePush(Register.ReaderStartAddrHigh, readerBaseMsb)
+  control.writePush(Register.ReaderStartAddr, readerBaseLsb)
   control.writePush(Register.ReaderLineLen, width)
   control.writePush(Register.ReaderLineCnt, height)
   control.writePush(Register.ReaderStride, 0)
 
-  control.writePush(Register.WriterStartAddr, height * width * 4 + width * 2)
+  control.writePush(Register.WriterStartAddrHigh, writerBaseMsb)
+  control.writePush(Register.WriterStartAddr, writerBaseLsb)
   control.writePush(Register.WriterLineLen, width)
   control.writePush(Register.WriterLineCnt, height)
   control.writePush(Register.WriterStride, width)
@@ -80,5 +89,6 @@ class ImageTransfer(dut: DMATop, dmaFull: DMAFull)(implicit val dmaConfig: DMACo
   expect(dut.io.irq.writerDone, 1)
   expect(dut.io.irq.readerDone, 1)
 
-  writer.saveToFile(f"./out${dmaConfig.busConfig}.rgba")
+  val is64 = readerBaseMsb > 0 || writerBaseMsb > 0
+  writer.saveToFile(f"./out${dmaConfig.busConfig}${if(is64) "_64" else ""}.rgba")
 }
