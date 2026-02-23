@@ -19,7 +19,9 @@ import DMAController.Bus.{AXI4Lite, AXI4}
 import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chisel3.{Bits, Bundle}
 
-class DMAFullMem(dut: DMATop) extends DMAFull(dut) {
+class DMAFullMem(dut: DMATop,
+                 readerBase: Long = 0L,
+                 writerBase: Long = 0L) extends DMAFull(dut, readerBase, writerBase) {
   val width = 256
   val height = 256
   val io = dut.io.asInstanceOf[Bundle{
@@ -30,6 +32,6 @@ class DMAFullMem(dut: DMATop) extends DMAFull(dut) {
                                 val sync: SyncBundle}]
 
   val control = new AxiLiteMasterBfm(io.control, peek[Bits], poke[Bits], println)
-  val reader = new Axi4MemoryBfm(io.read, width * height, peek[Bits], poke[Bits], println)
-  val writer = new Axi4MemoryBfm(io.write, width * height, peek[Bits], poke[Bits], println)
+  val reader = new Axi4MemoryBfm(io.read, readerBase, width * height, peek[Bits], poke[Bits], println)
+  val writer = new Axi4MemoryBfm(io.write, writerBase, width * height, peek[Bits], poke[Bits], println)
 }

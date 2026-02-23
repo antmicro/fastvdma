@@ -19,7 +19,7 @@ import DMAController.Bus.{AXI4Lite, AXIStream, AXI4}
 import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chisel3.{Bits, Bundle}
 
-class DMAFullStream(dut: DMATop) extends DMAFull(dut) {
+class DMAFullStream(dut: DMATop, writerBase: Long = 0L) extends DMAFull(dut, writerBase = writerBase) {
   val width = 256
   val height = 256
   val io = dut.io.asInstanceOf[Bundle{
@@ -31,5 +31,5 @@ class DMAFullStream(dut: DMATop) extends DMAFull(dut) {
 
   val control = new AxiLiteMasterBfm(io.control, peek[Bits], poke[Bits], println)
   val reader = new AxiStreamMasterBfm(io.read, width * height, peek[Bits], poke[Bits], println)
-  val writer = new Axi4MemoryBfm(io.write, width * height, peek[Bits], poke[Bits], println)
+  val writer = new Axi4MemoryBfm(io.write, writerBase, width * height, peek[Bits], poke[Bits], println)
 }

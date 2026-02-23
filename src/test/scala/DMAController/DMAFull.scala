@@ -18,7 +18,9 @@ import DMAController.Bfm.{ControlBfm, IOBfm}
 import DMAController.Worker.{InterruptBundle, SyncBundle}
 import chiseltest.iotesters.PeekPokeTester
 
-abstract class DMAFull(dut: DMATop) extends PeekPokeTester(dut){
+abstract class DMAFull(dut: DMATop,
+                       val readerBase: Long = 0L,
+                       val writerBase: Long = 0L) extends PeekPokeTester(dut){
   val control: ControlBfm
   val reader: IOBfm
   val writer: IOBfm

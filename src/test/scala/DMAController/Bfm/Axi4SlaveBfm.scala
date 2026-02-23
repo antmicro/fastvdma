@@ -20,13 +20,23 @@ import chisel3.Bits
 import java.nio._
 
 class Axi4MemoryBfm(val axi: AXI4,
+                        baseAddress: Long,
                         val size: Int,
                         val peek: Bits => BigInt,
                         val poke: (Bits, BigInt) => Unit,
                         val println: String => Unit)
 extends Axi4Bfm {
 
+  val base = baseAddress / 4
   var buf: Array[Int] = new Array[Int](size)
+
+  private def addrToBufOffset(addr: Long): Int = {
+    require(addr >= base, s"AXI word addr 0x${addr.toHexString} is below BFM base 0x${base.toHexString}")
+    val bufOffset = addr - base
+    require(bufOffset.isValidInt, s"Buffer offset $bufOffset too large for int")
+    require(bufOffset < buf.length, s"Buffer offset $bufOffset exceeds buffer size ${buf.length}")
+    bufOffset.toInt
+  }
 
   class Write {
     private object State extends Enumeration {
@@ -46,7 +56,7 @@ extends Axi4Bfm {
 
     private var bready: BigInt = 0
 
-    private var addr: Int = 0
+    private var addr: Long = 0
     private var len: Int = 0
     private var xferLen: Int = 0
 
@@ -71,7 +81,7 @@ extends Axi4Bfm {
         }
         case State.WriteAddr => {
           if(awvalid != 0) {
-            addr = awaddr.toInt / 4
+            addr = awaddr.toLong / 4
             xferLen = awlen.toInt + 1
             poke(axi.aw.awready, 0)
             poke(axi.w.wready, 1)
@@ -80,7 +90,7 @@ extends Axi4Bfm {
         }
         case State.WriteData => {
           if(wvalid != 0) {
-            buf(addr) = wdata.toInt
+            buf(addrToBufOffset(addr)) = wdata.toInt
             addr += 1
             len += 1
             if(wlast != 0) {
@@ -119,7 +129,7 @@ extends Axi4Bfm {
 
     private var rready: BigInt = 0
 
-    private var addr: Int = 0
+    private var addr: Long = 0
     private var len: Int = 0
     private var xferLen: Int = 0
 
@@ -142,7 +152,7 @@ extends Axi4Bfm {
         }
         case State.ReadAddr => {
           if(arvalid != 0) {
-            addr = araddr.toInt / 4
+            addr = araddr.toLong / 4
             xferLen = arlen.toInt + 1
             poke(axi.ar.arready, 0)
             state = State.ReadData
@@ -150,7 +160,7 @@ extends Axi4Bfm {
         }
         case State.ReadData => {
           if(rready != 0) {
-            poke(axi.r.rdata, buf(addr))
+            poke(axi.r.rdata, buf(addrToBufOffset(addr)))
             addr += 1
             len += 1
             poke(axi.r.rvalid, 1)
