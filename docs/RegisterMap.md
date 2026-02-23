@@ -146,4 +146,4 @@ Current register layout is shown in the table below:
 
 ---
 
-You can also check [WorkerCSRWrapper](https://github.com/antmicro/fastvdma/blob/main/src/main/scala/DMAController/Worker/WorkerCSRWrapper.scala) for the implementation details on how the CSRs are attached to the DMA logic (`io.csr(0)` refers to `0x00`, `io.csr(1)` to `0x04` and so on).
+You can also check [WorkerCSRWrapper](https://github.com/antmicro/fastvdma/blob/main/src/main/scala/DMAController/Worker/WorkerCSRWrapper.scala) for the implementation details on how the CSRs are attached to the DMA logic.

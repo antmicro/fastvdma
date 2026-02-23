@@ -56,12 +56,14 @@ class WorkerCSRWrapper(implicit dmaConfig: DMAConfig) extends DMAModule {
   val (in, csr, out) = dmaConfig.getBusConfig()
   val encConfig = RegInit((in << 8 | csr << 4 | out).U(dmaConfig.addrWidth.W))
 
-  control := ClearCSR(clear, io.csr(0))
+  def csrReg(r: RegDef): CSRRegBundle = io.csr(r.index)
 
-  StatusCSR(status, io.csr(1))
+  control := ClearCSR(clear, csrReg(Register.Ctrl))
+
+  StatusCSR(status, csrReg(Register.Status))
 
   io.irq <> InterruptController(addressGeneratorRead.io.ctl.busy, addressGeneratorWrite.io.ctl.busy,
-    io.csr(2), io.csr(3))
+    csrReg(Register.InterruptMask), csrReg(Register.InterruptStatus))
 
   clear := Cat(readerStart, writerStart) & ~Cat(control(5), control(4))
 
@@ -69,19 +71,19 @@ class WorkerCSRWrapper(implicit dmaConfig: DMAConfig) extends DMAModule {
   writerStart := ((!writerSyncOld && writerSync) || control(2)) && control(0)
 
   addressGeneratorRead.io.ctl.start := readerStart
-  addressGeneratorRead.io.ctl.startAddress := Cat(SimpleCSR(io.csr(14)), SimpleCSR(io.csr(4)))
-  addressGeneratorRead.io.ctl.lineLength := SimpleCSR(io.csr(5))
-  addressGeneratorRead.io.ctl.lineCount := SimpleCSR(io.csr(6))
-  addressGeneratorRead.io.ctl.lineGap := SimpleCSR(io.csr(7))
+  addressGeneratorRead.io.ctl.startAddress := Cat(SimpleCSR(csrReg(Register.ReaderStartAddrHigh)), SimpleCSR(csrReg(Register.ReaderStartAddr)))
+  addressGeneratorRead.io.ctl.lineLength := SimpleCSR(csrReg(Register.ReaderLineLen))
+  addressGeneratorRead.io.ctl.lineCount := SimpleCSR(csrReg(Register.ReaderLineCnt))
+  addressGeneratorRead.io.ctl.lineGap := SimpleCSR(csrReg(Register.ReaderStride))
 
   addressGeneratorWrite.io.ctl.start := writerStart
-  addressGeneratorWrite.io.ctl.startAddress := Cat(SimpleCSR(io.csr(15)), SimpleCSR(io.csr(8)))
-  addressGeneratorWrite.io.ctl.lineLength := SimpleCSR(io.csr(9))
-  addressGeneratorWrite.io.ctl.lineCount := SimpleCSR(io.csr(10))
-  addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(io.csr(11))
+  addressGeneratorWrite.io.ctl.startAddress := Cat(SimpleCSR(csrReg(Register.WriterStartAddrHigh)), SimpleCSR(csrReg(Register.WriterStartAddr)))
+  addressGeneratorWrite.io.ctl.lineLength := SimpleCSR(csrReg(Register.WriterLineLen))
+  addressGeneratorWrite.io.ctl.lineCount := SimpleCSR(csrReg(Register.WriterLineCnt))
+  addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(csrReg(Register.WriterStride))
 
-  StatusCSR(version, io.csr(12))
-  StatusCSR(encConfig, io.csr(13))
+  StatusCSR(version, csrReg(Register.Version))
+  StatusCSR(encConfig, csrReg(Register.Configuration))
 
   val lastCsrIndex = 15
   require (dmaConfig.controlRegCount > lastCsrIndex)
