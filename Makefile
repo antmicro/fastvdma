@@ -40,6 +40,8 @@ testall: test
 
 clean:
 	$(SBT) clean
+	@rm -f *.rgba
+	@rm -f $(filter-out bunny.png, $(wildcard *.png))
 
 .PHONY: verilog testsetup testM2M testS2M test testall clean
 
