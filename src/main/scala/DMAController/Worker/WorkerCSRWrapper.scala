@@ -69,13 +69,13 @@ class WorkerCSRWrapper(implicit dmaConfig: DMAConfig) extends DMAModule {
   writerStart := ((!writerSyncOld && writerSync) || control(2)) && control(0)
 
   addressGeneratorRead.io.ctl.start := readerStart
-  addressGeneratorRead.io.ctl.startAddress := SimpleCSR(io.csr(4))
+  addressGeneratorRead.io.ctl.startAddress := Cat(SimpleCSR(io.csr(14)), SimpleCSR(io.csr(4)))
   addressGeneratorRead.io.ctl.lineLength := SimpleCSR(io.csr(5))
   addressGeneratorRead.io.ctl.lineCount := SimpleCSR(io.csr(6))
   addressGeneratorRead.io.ctl.lineGap := SimpleCSR(io.csr(7))
 
   addressGeneratorWrite.io.ctl.start := writerStart
-  addressGeneratorWrite.io.ctl.startAddress := SimpleCSR(io.csr(8))
+  addressGeneratorWrite.io.ctl.startAddress := Cat(SimpleCSR(io.csr(15)), SimpleCSR(io.csr(8)))
   addressGeneratorWrite.io.ctl.lineLength := SimpleCSR(io.csr(9))
   addressGeneratorWrite.io.ctl.lineCount := SimpleCSR(io.csr(10))
   addressGeneratorWrite.io.ctl.lineGap := SimpleCSR(io.csr(11))
@@ -83,7 +83,9 @@ class WorkerCSRWrapper(implicit dmaConfig: DMAConfig) extends DMAModule {
   StatusCSR(version, io.csr(12))
   StatusCSR(encConfig, io.csr(13))
 
-  for (i <- 14 until dmaConfig.controlRegCount) {
+  val lastCsrIndex = 15
+  require (dmaConfig.controlRegCount > lastCsrIndex)
+  for (i <- lastCsrIndex + 1 until dmaConfig.controlRegCount) {
     SimpleCSR(io.csr(i))
   }
 

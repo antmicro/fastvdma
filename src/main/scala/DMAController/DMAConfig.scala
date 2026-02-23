@@ -146,4 +146,6 @@ object Register {
   val WriterStride = 0x2c
   val Version = 0x30
   val Configuration = 0x34
+  val ReaderStartAddrHigh = 0x38
+  val WriterStartAddrHigh = 0x3c
 }
