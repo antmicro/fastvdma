@@ -17,12 +17,12 @@ testsetup:
 	convert -resize $(SIZE_HALF)x$(SIZE_HALF) $(IMG) img0.rgba
 	convert -resize $(SIZE)x$(SIZE) $(IMG) img1.rgba
 
-testM2M: testsetup 
-	$(SBT) "Test / testOnly -t *$(TB)"
+testM2M: testsetup
+	$(SBT) 'Test / testOnly *$(TB) -- -z "MM2MM transfer"'
 	convert -size $(SIZE)x$(SIZE) -depth 8 outAXI_AXIL_AXI.rgba outM2M.png
 
 testS2M: testsetup
-	$(SBT) "Test / testOnly -t *$(TB)"
+	$(SBT) 'Test / testOnly *$(TB) -- -z "S2MM transfer"'
 	convert -size $(SIZE)x$(SIZE) -depth 8 outAXIS_AXIL_AXI.rgba outS2M.png
 
 test: testS2M testM2M
