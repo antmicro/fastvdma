@@ -42,7 +42,7 @@ resolvers ++= Seq(
 // Library name, Organization, Version
 val defaultVersions = Map(
   "chisel" -> "org.chipsalliance" -> chiselVersion,
-  "chiseltest" -> "edu.berkeley.cs" -> "6.0-SNAPSHOT",
+  "chiseltest" -> "edu.berkeley.cs" -> "6.0.+",
   "chisel-iotesters" -> "edu.berkeley.cs" -> "2.5.5+",
   "play-json" -> "com.typesafe.play" -> "2.8.+",
   "scalatest" -> "org.scalatest" -> "3.2.16"
