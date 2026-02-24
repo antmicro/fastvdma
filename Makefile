@@ -33,7 +33,7 @@ testall: test
 clean:
 	$(SBT) clean
 
-.PHONY: verilog test testall
+.PHONY: verilog testsetup testM2M testS2M test testall clean
 
 %:
 	sphinx-build -M $@ docs build $(SPHINXOPTS) $(0)
