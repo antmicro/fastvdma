@@ -324,6 +324,11 @@ project/plugins/project/
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+# Metals (Scala language server) temporary files
+.bloop/
+.bsp/
+.metals/
+metals.sbt
 ### Java template
 *.class
 
