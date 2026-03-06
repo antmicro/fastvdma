@@ -19,7 +19,7 @@ import chisel3.util._
 import DMAController.Bus._
 import DMAController.CSR._
 import DMAController.Frontend._
-import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle}
+import DMAController.Worker.{InterruptBundle, WorkerCSRWrapper, SyncBundle, ActiveBundle}
 import DMAController.DMAConfig._
 import DMAUtils._
 
@@ -30,6 +30,7 @@ class DMATop(implicit dmaConfig: DMAConfig) extends DMAModule {
     val write = Bus.getWriterBus
     val irq = new InterruptBundle
     val sync = new SyncBundle
+    val active = new ActiveBundle
   })
 
   val csrFrontend = Module(Bus.getCSR)
@@ -56,5 +57,6 @@ class DMATop(implicit dmaConfig: DMAConfig) extends DMAModule {
 
   io.irq <> ctl.io.irq
   io.sync <> ctl.io.sync
+  io.active <> ctl.io.active
 
 }

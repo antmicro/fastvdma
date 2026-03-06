@@ -27,6 +27,7 @@ class WorkerCSRWrapper(implicit dmaConfig: DMAConfig) extends DMAModule {
     val sync = new SyncBundle
     val xferRead = new XferDescBundle(dmaConfig.addrWidth)
     val xferWrite = new XferDescBundle(dmaConfig.addrWidth)
+    val active = new ActiveBundle
   })
 
   val addressGeneratorRead = Module(new AddressGenerator(dmaConfig.addrWidth, dmaConfig.readDataWidth))
@@ -96,5 +97,8 @@ class WorkerCSRWrapper(implicit dmaConfig: DMAConfig) extends DMAModule {
 
   transferSplitterWrite.io.xferIn <> addressGeneratorWrite.io.xfer
   io.xferWrite <> transferSplitterWrite.io.xferOut
+
+  io.active.readerActive := addressGeneratorRead.io.ctl.busy
+  io.active.writerActive := addressGeneratorWrite.io.ctl.busy
 
 }
